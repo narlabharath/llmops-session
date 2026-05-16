@@ -2,8 +2,13 @@
 
 from __future__ import annotations
 
+import json
 import logging
+from pathlib import Path
+from time import perf_counter
 from typing import Final
+
+from src.rag.types import RetrievedDocument
 
 from src.llm import LLMClient, load_prompt
 
@@ -16,6 +21,8 @@ _CLASSIFIER_SYSTEM_PROMPT: Final[str] = (
     "Reply with exactly one category label."
 )
 _PROMPT_VERSION: Final[str] = "v1"
+_ANSWER_SYSTEM_PROMPT_NAME: Final[str] = "program_assistant_system"
+_GROUND_ANSWER_PROMPT_NAME: Final[str] = "ground_answer"
 _VALID_CLASSIFICATIONS: Final[set[str]] = {
     "policy_question",
     "schedule_question",
@@ -47,6 +54,64 @@ def classify_question(state: WorkflowState, llm: LLMClient | None = None) -> dic
     return {"classification": classification, "trace": trace}
 
 
+def retrieve_documents(
+    state: WorkflowState,
+    persist_dir: Path,
+    k: int = 5,
+) -> dict[str, object]:
+    """Retrieve supporting documents for the participant question."""
+
+    from src.rag import retrieve
+
+    question = state["question"]
+    started = perf_counter()
+    retrieved_docs = retrieve(Path(persist_dir), question, k=k)
+    latency_ms = (perf_counter() - started) * 1000
+    retrieved_doc_ids = _get_retrieved_doc_ids(retrieved_docs)
+    trace_entry: TraceEntry = {
+        "node": "retrieve",
+        "input": question,
+        "output": retrieved_doc_ids,
+        "retrieved_doc_ids": retrieved_doc_ids,
+        "retrieved_count": len(retrieved_docs),
+        "max_score": max((document.score for document in retrieved_docs), default=None),
+        "latency_ms": latency_ms,
+    }
+    trace = [*state.get("trace", []), trace_entry]
+    return {"retrieved_docs": retrieved_docs, "trace": trace}
+
+
+def generate_answer(state: WorkflowState, llm: LLMClient | None = None) -> dict[str, object]:
+    """Generate a grounded answer from the retrieved documents."""
+
+    question = state["question"]
+    retrieved_docs = state.get("retrieved_docs", [])
+    system_template = load_prompt(_ANSWER_SYSTEM_PROMPT_NAME, version=_PROMPT_VERSION)
+    user_template = load_prompt(_GROUND_ANSWER_PROMPT_NAME, version=_PROMPT_VERSION)
+    retrieved_context = _format_retrieved_context(retrieved_docs)
+    prompt = user_template.format(retrieved_context=retrieved_context, question=question)
+    llm_client = llm or LLMClient(provider="mock", prompt_version=_PROMPT_VERSION)
+    result = llm_client.complete(
+        prompt,
+        system=system_template,
+        prompt_version=_PROMPT_VERSION,
+    )
+    answer = _extract_answer_text(result.text)
+    retrieved_doc_ids = _get_retrieved_doc_ids(retrieved_docs)
+    trace_entry: TraceEntry = {
+        "node": "answer",
+        "input": question,
+        "output": answer,
+        "retrieved_doc_ids": retrieved_doc_ids,
+        "latency_ms": result.latency_ms,
+        "cost_estimate_usd": result.cost_estimate_usd,
+        "cache_status": result.cache_status,
+        "prompt_version": _PROMPT_VERSION,
+    }
+    trace = [*state.get("trace", []), trace_entry]
+    return {"answer": answer, "trace": trace}
+
+
 def _parse_classification(raw_output: str) -> str:
     normalized = raw_output.strip().lower()
     if normalized in _VALID_CLASSIFICATIONS:
@@ -60,4 +125,58 @@ def _parse_classification(raw_output: str) -> str:
     return _FALLBACK_CLASSIFICATION
 
 
-__all__ = ["classify_question"]
+def _format_retrieved_context(retrieved_docs: list[RetrievedDocument]) -> str:
+    if not retrieved_docs:
+        return "[source: none, priority: 99, score: 0.000, rank: 0]\n<no retrieved documents>"
+
+    rendered_documents: list[str] = []
+    for document in retrieved_docs:
+        rendered_documents.append(
+            (
+                f"[source: {_get_retrieved_doc_id(document)}, "
+                f"priority: {document.chunk.metadata.source_priority}, "
+                f"score: {document.score:.3f}, rank: {document.rank}]\n"
+                f"{document.chunk.text}"
+            )
+        )
+    return "\n\n".join(rendered_documents)
+
+
+def _extract_answer_text(raw_output: str) -> str:
+    normalized = raw_output.strip()
+    if not normalized:
+        return ""
+
+    try:
+        parsed = json.loads(normalized)
+    except json.JSONDecodeError:
+        logger.warning(
+            "Answer generation returned non-JSON content; using raw text. raw_output=%r",
+            raw_output,
+        )
+        return normalized
+
+    answer = parsed.get("answer") if isinstance(parsed, dict) else None
+    if isinstance(answer, str) and answer.strip():
+        return answer.strip()
+
+    logger.warning(
+        "Answer generation returned JSON without a usable answer; using raw text. raw_output=%r",
+        raw_output,
+    )
+    return normalized
+
+
+def _get_retrieved_doc_ids(retrieved_docs: list[RetrievedDocument]) -> list[str]:
+    return [_get_retrieved_doc_id(document) for document in retrieved_docs]
+
+
+def _get_retrieved_doc_id(document: RetrievedDocument) -> str:
+    return (
+        document.chunk.metadata.document_id
+        or document.chunk.source_path
+        or f"rank-{document.rank}"
+    )
+
+
+__all__ = ["classify_question", "retrieve_documents", "generate_answer"]
