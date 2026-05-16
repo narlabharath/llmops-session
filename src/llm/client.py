@@ -74,7 +74,8 @@ class LLMClient:
         cache: bool | LLMCache | None = None,
         prompt_version: str = "v1",
     ) -> None:
-        load_dotenv()
+        if not os.getenv("LLM_DISABLE_DOTENV"):
+            load_dotenv()
 
         provider_name = provider or os.getenv("LLM_PROVIDER", "anthropic")
         provider_spec = get_provider_spec(provider_name)

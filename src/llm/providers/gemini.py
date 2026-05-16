@@ -6,10 +6,13 @@ import importlib
 import os
 from typing import Any
 
+from ..provider_registry import get_provider_spec
+
 
 class GeminiProvider:
     def __init__(self, model: str | None = None) -> None:
-        self.model = model or os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+        spec = get_provider_spec("gemini")
+        self.model = model or os.getenv(spec.model_env_var, spec.default_model)
         try:
             genai = importlib.import_module("google.generativeai")
         except ModuleNotFoundError as exc:

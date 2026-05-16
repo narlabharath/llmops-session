@@ -7,6 +7,8 @@ import os
 from typing import Any
 from urllib import error, request
 
+from ..provider_registry import get_provider_spec
+
 
 def _normalize_base_url(base_url: str) -> str:
     normalized = base_url.rstrip("/")
@@ -23,7 +25,8 @@ def _normalize_base_url(base_url: str) -> str:
 
 class OllamaProvider:
     def __init__(self, model: str | None = None, base_url: str | None = None) -> None:
-        self.model = model or os.getenv("OLLAMA_MODEL", "llama3.1:8b")
+        spec = get_provider_spec("ollama")
+        self.model = model or os.getenv(spec.model_env_var, spec.default_model)
         configured_base_url = base_url or os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
         self.base_url = _normalize_base_url(configured_base_url)
         self._generate_url = f"{self.base_url}/api/generate"

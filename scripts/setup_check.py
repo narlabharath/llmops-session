@@ -425,6 +425,10 @@ def check_one_token_completion() -> CheckResult:
 def main() -> int:
     if should_load_dotenv():
         load_dotenv(dotenv_path=ROOT / ".env", override=False)
+    else:
+        # Propagate the opt-out to LLMClient so its internal load_dotenv()
+        # call doesn't re-leak repo-local .env state into downstream checks.
+        os.environ["LLM_DISABLE_DOTENV"] = "1"
     reporter = Reporter()
     checks = [
         check_python_version,

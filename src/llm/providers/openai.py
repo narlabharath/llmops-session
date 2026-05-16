@@ -6,10 +6,13 @@ import importlib
 import os
 from typing import Any
 
+from ..provider_registry import get_provider_spec
+
 
 class OpenAIProvider:
     def __init__(self, model: str | None = None) -> None:
-        self.model = model or os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+        spec = get_provider_spec("openai")
+        self.model = model or os.getenv(spec.model_env_var, spec.default_model)
         try:
             openai = importlib.import_module("openai")
         except ModuleNotFoundError as exc:
