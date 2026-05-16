@@ -5,6 +5,7 @@ from __future__ import annotations
 from .chunking import chunk_corpus, chunk_document
 from .embeddings import get_embeddings
 from .loader import load_corpus, load_document
+from .retriever import ingest, retrieve
 from .store import build_vector_store, load_vector_store, query_store
 from .types import Chunk, DocumentMetadata, IngestionResult, LoadedDocument, RetrievedDocument
 
@@ -22,4 +23,6 @@ __all__ = [
     "build_vector_store",
     "load_vector_store",
     "query_store",
+    "ingest",
+    "retrieve",
 ]

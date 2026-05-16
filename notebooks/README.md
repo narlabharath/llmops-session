@@ -4,6 +4,8 @@
 
 Demonstrates the core LLM workflow against a real Anthropic backend.
 
+NB 02 (when authored) will consume `src.rag.ingest` and `src.rag.retrieve`.
+
 ### Run
 
 From inside `llmops-session/`:
