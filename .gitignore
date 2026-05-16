@@ -1,0 +1,52 @@
+# --- Secrets — NEVER commit --------------------------------------------------
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+.secrets/
+
+# --- Python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# --- Virtual envs ------------------------------------------------------------
+.venv/
+venv/
+env/
+.python-version
+
+# --- Jupyter -----------------------------------------------------------------
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# --- Vector store / data caches ----------------------------------------------
+data/chroma/
+data/.cache/
+*.sqlite3
+*.db
+
+# --- OS / editor -------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Logs / traces -----------------------------------------------------------
+*.log
+logs/
+traces/
