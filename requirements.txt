@@ -23,8 +23,13 @@ openai>=1.50.0
 google-generativeai>=0.8.0
 
 # --- RAG ---------------------------------------------------------------------
-chromadb>=0.5.0
-sentence-transformers>=3.0.0
+langchain-core==0.3.86
+langchain-community==0.3.31
+langchain-text-splitters==0.3.11
+langchain-chroma==0.1.4
+langchain-huggingface==0.1.2
+chromadb==0.5.23
+sentence-transformers==3.4.1
 
 # --- App ---------------------------------------------------------------------
 streamlit>=1.35.0
