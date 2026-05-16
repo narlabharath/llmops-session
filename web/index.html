@@ -135,7 +135,7 @@
       justify-content: space-between;
       gap: 1rem;
     }
-    .header-brand { flex-shrink: 0; }
+    .header-brand { flex-shrink: 1; min-width: 0; }
     .site-title {
       font-size: 18px;
       font-weight: 600;
@@ -149,6 +149,7 @@
       margin: 0;
       color: white;
     }
+    @media (max-width: 1280px) { .site-subtitle { display: none; } }
 
     /* § 5 Scroll progress bar — 3px, white on blue, inside header */
     .scroll-progress {
@@ -186,11 +187,13 @@
       text-decoration: none;
     }
     .nav-parts a.active {
-      background: rgba(255,255,255,0.25);
       color: white;
-      font-weight: 600;
+      font-weight: 700;
+      border-bottom: 2px solid white;
+      padding-bottom: calc(0.4rem - 2px);
     }
-    .nav-parts a:focus {
+    .nav-parts a:focus { outline: none; }
+    .nav-parts a:focus-visible {
       outline: 3px solid white;
       outline-offset: 2px;
     }
@@ -198,32 +201,14 @@
     /* ── Floating section quicknav ─────────────────────────────────────────────── */
     .section-quicknav {
       position: fixed;
-      top: 68px;
+      top: 90px;
       right: 1rem;
       z-index: 90;
       text-align: right;
     }
-    .sqn-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      padding: 0.3rem 0.75rem;
-      background: var(--ms-blue);
-      color: #fff;
-      border: none;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,120,212,0.35);
-      white-space: nowrap;
-      line-height: 1.4;
-    }
-    .sqn-toggle:hover { background: #005A9E; }
-    .sqn-toggle-icon { font-size: 11px; opacity: 0.85; }
+    .sqn-toggle { display: none; }
     .sqn-panel {
-      display: none;
-      margin-top: 0.4rem;
+      display: block;
       background: #fff;
       border: 1px solid var(--border-color);
       border-radius: 10px;
@@ -232,7 +217,6 @@
       min-width: 195px;
       text-align: left;
     }
-    .section-quicknav.sqn-open .sqn-panel { display: block; }
     .sqn-part-label {
       background: var(--ms-blue);
       color: #fff;
@@ -274,12 +258,23 @@
       font-style: italic;
     }
     @media (max-width: 840px) { .section-quicknav { display: none; } }
+    @media (min-width: 841px) {
+      /* Nav position, panel width, and content offset all scale together */
+      .section-quicknav { right: clamp(0.5rem, 1vw, 1.25rem); }
+      .sqn-panel        { min-width: clamp(165px, 15vw, 210px); }
+      .sqn-part-label   { font-size: clamp(9px, 0.75vw, 11px); padding: clamp(0.35rem, 0.4vw, 0.5rem) clamp(0.6rem, 0.7vw, 0.85rem); }
+      .sqn-item a, .sqn-item.sqn-draft { font-size: clamp(11px, 1vw, 13px); padding: clamp(0.25rem, 0.3vw, 0.35rem) clamp(0.6rem, 0.7vw, 0.85rem); }
+    }
 
     /* § 4 Layout — main container */
     .container {
-      max-width: 1200px;
+      max-width: 1360px;
       margin: 0 auto;
-      padding: 2rem 3rem;
+      padding: 2rem 2rem;
+    }
+    /* Shift content left of floating nav — must come after base rule to win cascade */
+    @media (min-width: 841px) {
+      .container { padding-right: clamp(195px, calc(15vw + 2rem), 245px); }
     }
 
     /* § 4 Section card */
@@ -1008,6 +1003,37 @@
       margin: 0;
     }
 
+    /* Foldable table wrapper for Section 3 comparison table */
+    details.table-fold {
+      margin: 1.5rem 0;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-light, #E0E0E0);
+    }
+    details.table-fold > summary {
+      background: var(--ms-blue);
+      color: white;
+      padding: 0.9rem 1.5rem;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    details.table-fold > summary::-webkit-details-marker { display: none; }
+    details.table-fold > summary::after {
+      content: '▼';
+      margin-left: auto;
+      font-size: 13px;
+      transition: transform 0.25s;
+    }
+    details.table-fold[open] > summary::after { transform: rotate(180deg); }
+    details.table-fold > summary:hover { background: var(--ms-blue-dark, #005A9E); }
+    details.table-fold > .table-wrapper { margin: 0; border-radius: 0; }
+
     /* Highlighted cell for meaningfully-different LLM Ops column cells (rows 1,2,4,6,7,8) */
     .cell-warn {
       background: #FEE7E7 !important;
@@ -1280,6 +1306,19 @@
       .example-card { transition: none; }
       .lifecycle-strip li a { transition: none; }
     }
+
+    /* T-020 / LH-20: Section 6 — Model Access layout */
+    #section6 .card-grid { grid-template-columns: repeat(4, 1fr); }
+    #section6 .code-trio {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    @media (max-width: 768px) {
+      #section6 .card-grid .example-card { grid-column: auto !important; }
+      #section6 .code-trio { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -1310,10 +1349,6 @@
 
   <!-- Floating section quicknav -->
   <div id="section-quicknav" class="section-quicknav" role="navigation" aria-label="Section navigation">
-    <button id="sqn-toggle" class="sqn-toggle" aria-label="Toggle section navigation">
-      <span id="sqn-sec-num">§1</span>
-      <span class="sqn-toggle-icon">☰</span>
-    </button>
     <div class="sqn-panel" id="sqn-panel">
       <div class="sqn-part-label" id="sqn-part-label"></div>
       <ul class="sqn-list" id="sqn-list"></ul>
@@ -2236,7 +2271,9 @@ flowchart LR
            Serves as a scannable summary after the tabs contextualize each discipline.
            .cell-warn on LLM Ops column cells in rows 1, 2, 4, 6, 7, 8 (meaningfully different).
            .table-wrapper provides horizontal scroll on mobile. -->
-      <div class="table-wrapper">
+      <details class="table-fold">
+        <summary>📋 Full comparison — SDLC → DevOps → MLOps → LLM Ops (8 properties)</summary>
+        <div class="table-wrapper">
         <table class="comparison-table">
           <thead>
             <tr>
@@ -2314,7 +2351,8 @@ flowchart LR
             </tr>
           </tbody>
         </table>
-      </div>
+        </div>
+      </details>
 
       <!-- 8. split-layout — "test is a test" vs "test is a distribution"
            Content verbatim from PLAN.md lines 422–425. -->
@@ -3220,7 +3258,7 @@ flowchart LR
             <div class="expandable-content">
               <p>⚡ <strong>Condition:</strong> No confidence-aware phrasing in system prompt; no groundedness eval in place.</p>
               <p>🔍 <strong>Symptom:</strong> Answer is delivered with full certainty but retrieval only weakly supported it.</p>
-              <p>🛠️ <strong>Fix:</strong> Response-quality checks; confidence-aware phrasing; LLM-judge eval on groundedness.</p>
+              <p>🛠️ <strong>Fix:</strong> Response-quality checks; LLM-judge eval on groundedness.</p>
               <span class="chip-label">Covered in</span>
               <div class="chip-group">
                 <a href="#section10" class="chip chip-blue">§10</a>
@@ -3340,7 +3378,7 @@ flowchart LR
             <div class="expandable-content">
               <p>⚡ <strong>Condition:</strong> Document updated externally; no re-index trigger or version-aware retrieval.</p>
               <p>🔍 <strong>Symptom:</strong> Policy was revised; old version is still in the index; assistant cites the old rule.</p>
-              <p>🛠️ <strong>Fix:</strong> Versioned ingestion; <code>effective_date</code>-aware retrieval; re-index on doc update.</p>
+              <p>🛠️ <strong>Fix:</strong> Re-ingest demo in NB 02; <code>effective_date</code> metadata; full doc-version pipeline is §14 territory.</p>
               <span class="chip-label">Covered in</span>
               <div class="chip-group">
                 <a href="#section8"  class="chip chip-blue">§8</a>
@@ -3383,7 +3421,7 @@ flowchart LR
             <div class="expandable-content">
               <p>⚡ <strong>Condition:</strong> Multi-turn conversation with no context budget; full history passed on every call.</p>
               <p>🔍 <strong>Symptom:</strong> A single conversation balloons to tens of thousands of tokens; cost monitoring shows a 10× spike.</p>
-              <p>🛠️ <strong>Fix:</strong> Context optimization; chunking budget; cost capture per trace; alerting.</p>
+              <p>🛠️ <strong>Fix:</strong> Context optimization; chunking budget; cost capture per trace.</p>
               <span class="chip-label">Covered in</span>
               <div class="chip-group">
                 <a href="#section9"  class="chip chip-blue">§9</a>
@@ -3424,7 +3462,7 @@ flowchart LR
           <!-- Row 13 — Stale cache -->
           <div class="expandable">
             <div class="expandable-header" style="background:var(--ms-green);" data-persona="fm-13">
-              <span>♻️ &nbsp;<strong>Stale cache serves superseded answer</strong> <span class="new-pill">new</span></span>
+              <span>♻️ &nbsp;<strong>Stale cache serves superseded answer</strong></span>
               <span style="display:flex;align-items:center;gap:0.5rem;">
                 <span class="chip chip-orange">Medium</span>
                 <span class="expandable-icon">▼</span>
@@ -3566,7 +3604,7 @@ flowchart LR
                   <td>4</td>
                   <td><strong>Overconfident answer</strong><br><span class="chip chip-red" style="margin-top:0.25rem;display:inline-block;">High</span></td>
                   <td>Answer is delivered with full certainty but the retrieval only weakly supported it.</td>
-                  <td>Response-quality checks; confidence-aware phrasing; LLM-judge eval on groundedness.</td>
+                  <td>Response-quality checks; LLM-judge eval on groundedness.</td>
                   <td><a href="#section10">§10</a> <a href="#section11">§11</a> · <code>NB 04</code> <code>NB 05</code></td>
                 </tr>
                 <tr>
@@ -3603,7 +3641,7 @@ flowchart LR
                   <td>9</td>
                   <td><strong>Stale document</strong><br><span class="chip chip-orange" style="margin-top:0.25rem;display:inline-block;">Medium</span></td>
                   <td>Policy was revised; old version still in the index; assistant cites the old rule.</td>
-                  <td>Versioned ingestion; <code>effective_date</code> aware retrieval; re-index on doc update.</td>
+                  <td>Re-ingest demo in NB 02; <code>effective_date</code> metadata; full doc-version pipeline is §14 territory.</td>
                   <td><a href="#section8">§8</a> <a href="#section14">§14</a> · <code>NB 02</code></td>
                 </tr>
                 <tr>
@@ -3617,7 +3655,7 @@ flowchart LR
                   <td>11</td>
                   <td><strong>High token usage</strong><br><span class="chip chip-orange" style="margin-top:0.25rem;display:inline-block;">Medium</span></td>
                   <td>A single conversation balloons to tens of thousands of tokens; cost monitoring shows a 10× spike.</td>
-                  <td>Context optimization; chunking budget; cost capture per trace; alerting.</td>
+                  <td>Context optimization; chunking budget; cost capture per trace.</td>
                   <td><a href="#section9">§9</a> <a href="#section12">§12</a> <a href="#section14">§14</a> · <code>NB 06</code></td>
                 </tr>
                 <tr class="category-row cat-green"><td colspan="5">🔄 Reliability &amp; CI</td></tr>
@@ -3629,7 +3667,7 @@ flowchart LR
                   <td><a href="#section10">§10</a> <a href="#section14">§14</a> · <code>NB 04</code></td>
                 </tr>
                 <tr>
-                  <td>13 <span class="new-pill">new</span></td>
+                  <td>13</td>
                   <td><strong>Stale cache serves superseded answer</strong><br><span class="chip chip-orange" style="margin-top:0.25rem;display:inline-block;">Medium</span></td>
                   <td>The policy doc was updated; a participant gets the <em>old</em> answer because it's still in the response cache.</td>
                   <td>Versioned cache keys (<code>prompt_version</code>, model, doc-version); invalidation on any of those; eval runs are cache-bypassed.</td>
@@ -3664,6 +3702,312 @@ flowchart LR
 
     </section>
     <!-- End Section 5 (T-018) -->
+
+    <!-- ==================================================================
+         Section 6 — Model Access — The Pluggability Story  (T-020 / LH-20)
+         Part 3 · Prototype · NB 01 cells 3–15
+         ================================================================== -->
+    <section id="section6" class="section" aria-labelledby="section6-title">
+
+      <!-- 1. section-meta -->
+      <div class="section-meta">
+        <span class="progress-indicator">Section 6 of 16 · Part 3 — Prototype</span>
+      </div>
+
+      <!-- 2. opening-hook — verbatim from PLAN.md -->
+      <div class="opening-hook">
+        What does it actually take to call an LLM in production?
+      </div>
+
+      <!-- 3. h2 — verbatim from PLAN.md -->
+      <h2 id="section6-title">Model Access — The Pluggability Story</h2>
+
+      <!-- 4. Intro paragraph — verbatim from PLAN.md -->
+      <p class="intro">
+        Before you build anything around the LLM, you need a reliable, observable, swappable way to talk to it. Provider choice will change in your career — for cost, capability, or outage reasons — and your code shouldn't notice. This section establishes the four properties of a production LLM call: pluggability, non-determinism, observability, and clean failure surfacing.
+      </p>
+
+      <!-- 5. Hero diagram (Mermaid) — the LLM-call envelope -->
+      <figure class="mermaid-figure" style="max-width:100%">
+        <div class="mermaid" style="max-width:100%">
+flowchart LR
+    Code["📝 Your code<br/>.complete(prompt)"]:::app
+    Client["⚙️ LLMClient<br/>cache · tracing · retries"]:::client
+    SDK["🔌 Provider SDK<br/>anthropic / openai / gemini<br/>ollama / mock"]:::sdk
+    API(["☁️ Provider API"]):::api
+    Env["🔧 LLM_PROVIDER env var<br/>one knob"]:::env
+
+    Code -- ".complete()" --> Client
+    Client -- "dispatch" --> SDK
+    SDK -- "HTTP request" --> API
+    API -- "raw response" --> SDK
+    SDK -- "adapted result" --> Client
+    Client -- "CompletionResult" --> Code
+    Env -. "selects provider" .-> Client
+
+    classDef app    fill:#EFF6FF,stroke:#0078D4,stroke-width:2px,color:#1B1B1B
+    classDef client fill:#FFF4CE,stroke:#F7630C,stroke-width:2px,color:#1B1B1B
+    classDef sdk    fill:#DFF6DD,stroke:#107C10,stroke-width:2px,color:#1B1B1B
+    classDef api    fill:#F5F0FF,stroke:#8661C5,stroke-width:2px,color:#1B1B1B
+    classDef env    fill:#FEE7E7,stroke:#D13438,stroke-width:2px,color:#1B1B1B
+        </div>
+        <figcaption>Every LLM call goes through one envelope. The envelope owns retries, caching, and tracing. The caller stays the same regardless of provider.</figcaption>
+      </figure>
+
+      <!-- 6. Provider card-grid — 5 cards (4-up grid + mock as 5th) -->
+      <h3>Five providers, one interface</h3>
+      <div class="card-grid">
+
+        <!-- Anthropic Claude -->
+        <div class="example-card blue">
+          <div class="card-icon">🟠</div>
+          <div class="card-title">Anthropic Claude</div>
+          <p><em>Hosted, course default.</em></p>
+          <p style="font-size:13px;"><code>~$0.25 / 1M tokens in</code> (Haiku 4.5)</p>
+          <p style="font-size:13px;font-style:italic;">Use when: production quality, no local hardware.</p>
+          <p style="font-size:12px;color:var(--ink-soft);"><code>ANTHROPIC_API_KEY</code></p>
+        </div>
+
+        <!-- OpenAI -->
+        <div class="example-card green">
+          <div class="card-icon">🟢</div>
+          <div class="card-title">OpenAI</div>
+          <p><em>Hosted alternative.</em></p>
+          <p style="font-size:13px;"><code>~$0.15 / 1M tokens in</code> (gpt-4o-mini)</p>
+          <p style="font-size:13px;font-style:italic;">Use when: organisation already on OpenAI.</p>
+          <p style="font-size:12px;color:var(--ink-soft);"><code>OPENAI_API_KEY</code></p>
+        </div>
+
+        <!-- Google Gemini -->
+        <div class="example-card orange">
+          <div class="card-icon">💎</div>
+          <div class="card-title">Google Gemini</div>
+          <p><em>Hosted, generous free tier.</em></p>
+          <p style="font-size:13px;"><code>free tier 15 RPM</code></p>
+          <p style="font-size:13px;font-style:italic;">Use when: budget is zero and you can't run local.</p>
+          <p style="font-size:12px;color:var(--ink-soft);"><code>GOOGLE_API_KEY</code></p>
+        </div>
+
+        <!-- Ollama / LM Studio -->
+        <div class="example-card purple">
+          <div class="card-icon">🖥️</div>
+          <div class="card-title">Ollama / LM Studio</div>
+          <p><em>Local, free.</em></p>
+          <p style="font-size:13px;"><code>hardware only</code></p>
+          <p style="font-size:13px;font-style:italic;">Use when: privacy-sensitive, fully offline, learning.</p>
+          <p style="font-size:12px;color:var(--ink-soft);">No key needed — needs a local server.</p>
+        </div>
+
+        <!-- Mock — 5th card, centred in second row -->
+        <div class="example-card red" style="grid-column:2/4;">
+          <div class="card-icon">🤖</div>
+          <div class="card-title">Mock</div>
+          <p><em>In-process, deterministic.</em></p>
+          <p style="font-size:13px;"><code>free</code></p>
+          <p style="font-size:13px;font-style:italic;">Use when: CI, offline tests, eval baselines that should not vary.</p>
+          <p style="font-size:12px;color:var(--ink-soft);">Pure-Python canned responses. No network.</p>
+        </div>
+
+      </div><!-- /.card-grid -->
+
+      <!-- 7. Three side-by-side code blocks — the only line that changes -->
+      <h3>The only line that changes</h3>
+      <div class="code-trio">
+
+        <div class="code-container">
+          <div class="code-header">
+            <span>Hosted Anthropic (course default) — cell 4</span>
+            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code class="language-python"># Hosted Anthropic (course default)
+client = LLMClient()
+result = client.complete(
+    "In one sentence, what is LLM Ops?")</code></pre>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span>Same code, different provider — cell 5</span>
+            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code class="language-python"># Same code, different provider
+client = LLMClient(provider="openai")
+result = client.complete(
+    "In one sentence, what is LLM Ops?")</code></pre>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <span>Same code, deterministic mock — cell 5</span>
+            <button class="copy-button" onclick="copyCode(this)">Copy</button>
+          </div>
+          <pre><code class="language-python"># Same code, deterministic mock for CI
+client = LLMClient(provider="mock")
+result = client.complete(
+    "In one sentence, what is LLM Ops?")</code></pre>
+        </div>
+
+      </div><!-- /.code-trio -->
+      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin-top:0.25rem;">The shape of <code>.complete(...)</code> is identical. Only the construction line differs. See NB 01 cells 4–6.</p>
+
+      <!-- 8. callout-info — CompletionResult fields -->
+      <aside class="callout callout-info">
+        <strong><code>CompletionResult</code> has more than <code>.text</code>.</strong>
+        <p style="margin:0.5rem 0 0.25rem;">Every call returns a structured <code>CompletionResult</code>:</p>
+        <ul style="margin:0.25rem 0 0;padding-left:1.25rem;">
+          <li><code>text</code> — the model's answer</li>
+          <li><code>provider</code> / <code>model</code> — what answered</li>
+          <li><code>latency_ms</code> — wall-clock latency</li>
+          <li><code>tokens_in</code> / <code>tokens_out</code> — usage</li>
+          <li><code>cost_estimate_usd</code> — per-call cost</li>
+          <li><code>cache_status</code> — <code>"hit"</code> / <code>"miss"</code> / <code>"bypass"</code></li>
+          <li><code>raw</code> — original SDK response object</li>
+        </ul>
+        <p style="margin:0.5rem 0 0;font-size:13px;color:var(--ink-soft);">This metadata is what §10 (Evaluation), §12 (Observability), and §14 (CI/CD) consume. The shape is locked here.</p>
+      </aside>
+
+      <!-- 9. h3 Non-determinism + code + mistake-box -->
+      <h3>Non-determinism is the defining property</h3>
+      <p>Hosted LLMs are not functions. Given the same prompt, three consecutive calls will produce three different answers — by design. The code below demonstrates this with <code>cache=False</code> to bypass any caching layer. See NB 01 cell 9.</p>
+
+      <div class="code-container">
+        <div class="code-header">
+          <span>NB 01 · Non-determinism demo (cell 9)</span>
+          <button class="copy-button" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code class="language-python">variance_prompt = "List three risks of deploying an LLM in production. Be specific."
+
+if not os.getenv("ANTHROPIC_API_KEY"):
+    print("[skipped — no key]")
+else:
+    client = LLMClient(cache=False)
+    for run_number in range(1, 4):
+        result = client.complete(
+            variance_prompt, cache=False, temperature=0.9, max_tokens=160
+        )
+        print(f"Run {run_number}:")
+        print(result.text)
+        print()</code></pre>
+      </div>
+
+      <aside class="mistake-box">
+        <p><strong>🚫 Mistake:</strong> treating an LLM call like a deterministic function. <em>"It worked when I tested it"</em> doesn't generalize. Every habit you have from regular software — caching by input, retrying on failure, comparing outputs — needs a rethink. The rest of this course is that rethink.</p>
+      </aside>
+
+      <!-- 10. Expandable — decision matrix -->
+      <details class="table-fold">
+        <summary>📊 Practitioner depth — Choosing a provider: decision matrix</summary>
+        <div style="padding:1rem 1.5rem;background:#F8F8F8;">
+          <p style="font-style:italic;margin:0 0 1rem;"><strong>Scenario:</strong> An enterprise team needs to migrate from OpenAI to Claude without rewriting their eval suite. What do they actually need to evaluate?</p>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Dimension</th>
+                  <th>Hosted<br/>(Anthropic / OpenAI / Gemini)</th>
+                  <th>Local<br/>(Ollama / LM Studio)</th>
+                  <th>Self-hosted<br/>(Together / Fireworks)</th>
+                  <th>Mock</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Cost per 1M tokens</strong></td><td>$0.15–$15</td><td>$0 (hardware only)</td><td>$0.20–$2</td><td>$0</td></tr>
+                <tr><td><strong>Latency (p50)</strong></td><td>200–800 ms</td><td>depends on GPU</td><td>200–500 ms</td><td>&lt;1 ms</td></tr>
+                <tr><td><strong>Privacy</strong></td><td>data leaves your network</td><td>fully local</td><td>data leaves but to a chosen vendor</td><td>local</td></tr>
+                <tr><td><strong>Reproducibility</strong></td><td>non-deterministic</td><td>non-deterministic</td><td>non-deterministic</td><td>deterministic</td></tr>
+                <tr><td><strong>Quality ceiling</strong></td><td>top-tier (Claude / GPT-4)</td><td>open-weight models only</td><td>open-weight models only</td><td>canned responses</td></tr>
+                <tr><td><strong>Ops burden</strong></td><td>none</td><td>medium (run a server)</td><td>low (managed)</td><td>none</td></tr>
+                <tr><td><strong>Ownership</strong></td><td>vendor lock-in real</td><td>full ownership</td><td>partial</td><td>full</td></tr>
+                <tr><td><strong>When to pick</strong></td><td>production with budget</td><td>dev / privacy / offline</td><td>open-weight at scale</td><td>tests, eval baselines</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:14px;font-style:italic;margin:0.75rem 0 0;color:var(--ink-soft);">The point isn't "which is best." It's that the abstraction makes the choice cheap. You can A/B test providers on the same eval set without changing your application code.</p>
+        </div>
+      </details>
+
+      <!-- 11. h3 Caching is observable + code from NB 01 cells 12–13 -->
+      <h3>Caching is observable</h3>
+      <p>The cache layer emits an event for every decision it makes. Wrapping <code>LLMCache</code> with an <code>on_cache_event</code> callback turns the cache into a trace source. NB 01 cell 12 demonstrates miss followed by hit; cell 13 bumps <code>prompt_version</code> and produces a fresh miss — <code>prompt_version</code> is the invalidation contract. This is the foundation for §9's caching deep dive and §12's <code>cache_status</code> trace field.</p>
+
+      <div class="code-container">
+        <div class="code-header">
+          <span>NB 01 · Cache hit / miss (cell 12)</span>
+          <button class="copy-button" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code class="language-python">events: list[str] = []
+cache = LLMCache(on_cache_event=lambda status: events.append(status))
+client = LLMClient(cache=cache, prompt_version="v1")
+
+prompt = "What's the capital of France?"
+r1 = client.complete(prompt, max_tokens=32)  # expect miss
+r2 = client.complete(prompt, max_tokens=32)  # expect hit
+print("After two identical calls:", events)   # ['miss', 'hit']
+print("r1.cache_status:", r1.cache_status, "· r2.cache_status:", r2.cache_status)</code></pre>
+      </div>
+
+      <div class="code-container">
+        <div class="code-header">
+          <span>NB 01 · prompt_version invalidation (cell 13)</span>
+          <button class="copy-button" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code class="language-python">client_v2 = LLMClient(cache=cache, prompt_version="v2")
+r3 = client_v2.complete(prompt, max_tokens=32)    # expect miss (key changed)
+print("After bumping prompt_version:", events)     # ['miss', 'hit', 'miss']
+print("r3.cache_status:", r3.cache_status)</code></pre>
+      </div>
+
+      <!-- 12. h3 Failure surfaces cleanly + NB 01 cell 15 code -->
+      <h3>Failure surfaces cleanly</h3>
+      <p>When a provider rejects a request — wrong key, rate limit, network failure — the client raises a typed exception that names the provider and the failure kind. NB 01 cell 15 demonstrates this live against real Anthropic with a deliberately invalid key; the notebook continues regardless.</p>
+
+      <div class="code-container">
+        <div class="code-header">
+          <span>NB 01 · Failure surfacing (cell 15)</span>
+          <button class="copy-button" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code class="language-python">import os
+
+saved = os.environ.get("ANTHROPIC_API_KEY")
+os.environ["ANTHROPIC_API_KEY"] = "invalid_key_for_demo_purposes"
+
+try:
+    bad_client = LLMClient(provider="anthropic")
+    result = bad_client.complete("This call will fail.", max_tokens=16)
+    print("Unexpected success:", result.text)
+except Exception as e:
+    print(f"Caught {type(e).__name__}: {e}")
+finally:
+    if saved is not None:
+        os.environ["ANTHROPIC_API_KEY"] = saved
+    else:
+        os.environ.pop("ANTHROPIC_API_KEY", None)</code></pre>
+      </div>
+
+      <p style="font-size:14px;color:var(--ink-soft);"><em>The error names the provider and the failure type. That's what observability needs to capture.</em></p>
+
+      <!-- 13. notebook-pointer block — exact text from PLAN.md item 13 -->
+      <div class="notebook-pointer">
+        <strong>Live demo:</strong> open <code>notebooks/01_core_llm_workflow.ipynb</code> and run cells 3–15.
+        <br/><br/>
+        Cells 3–7 demonstrate provider abstraction (Anthropic + mock + optional providers). Cells 8–10 demonstrate non-determinism and system-message effects. Cells 11–13 demonstrate cache hit/miss/version-bump. Cells 14–15 demonstrate clean failure surfacing.
+      </div>
+
+      <!-- 14. takeaway-box — verbatim from PLAN.md item 14 -->
+      <div class="takeaway-box">
+        <div class="icon">💡</div>
+        <div style="overflow:hidden;">
+          <p><strong>The lesson:</strong> an LLM call is not <code>requests.post()</code>. It's a non-deterministic, slow, expensive, breakable, configurable function call. The four properties that make it manageable — pluggability, observability, cache discipline, clean failure surfacing — are what you build on top of every later section in this course.</p>
+        </div>
+      </div>
+
+      <!-- 15. Cross-references footer line — verbatim from PLAN.md item 15 -->
+      <p style="font-size:13px;color:var(--ink-soft);border-top:1px solid var(--border-color);padding-top:0.75rem;margin-top:1.5rem;">
+        See also: <a href="#section1">§1</a> (the OpenAI case study, showing pluggability in production) · <a href="#section5">§5</a> row 10 (poor traceability — partly addressed by the metadata in this section) · <a href="#section9">§9</a> (where caching becomes a first-class topic with the 4-cache-types table).
+      </p>
+
+    </section>
+    <!-- End Section 6 (LH-20) -->
 
   </main>
 
@@ -3900,8 +4244,6 @@ flowchart LR
       var navEl    = document.getElementById('section-quicknav');
       var labelEl  = document.getElementById('sqn-part-label');
       var listEl   = document.getElementById('sqn-list');
-      var togBtn   = document.getElementById('sqn-toggle');
-      var secNumEl = document.getElementById('sqn-sec-num');
       if (!navEl) return;
 
       var secToPart = {};
@@ -3917,7 +4259,6 @@ flowchart LR
         if (!entry) return;
         var part = entry.part;
         var sec  = entry.sec;
-        if (secNumEl) secNumEl.textContent = '\u00a7' + sec.num;
         if (part !== activePart) {
           activePart = part;
           if (labelEl) labelEl.textContent = part.label;
@@ -3931,7 +4272,6 @@ flowchart LR
                 var a = document.createElement('a');
                 a.href = '#' + s.id;
                 a.textContent = '\u00a7' + s.num + ' \u00b7 ' + s.title;
-                a.addEventListener('click', function() { navEl.classList.remove('sqn-open'); });
                 li.appendChild(a);
               } else {
                 li.classList.add('sqn-draft');
@@ -3963,14 +4303,6 @@ flowchart LR
         }
       }, { rootMargin: '0px 0px -50% 0px', threshold: 0 });
       allSecEls.forEach(function(s) { obs.observe(s); });
-
-      togBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        navEl.classList.toggle('sqn-open');
-      });
-      document.addEventListener('click', function(e) {
-        if (!navEl.contains(e.target)) navEl.classList.remove('sqn-open');
-      });
 
       renderNav('section1');
     })();
