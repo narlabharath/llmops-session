@@ -1307,17 +1307,221 @@
       .lifecycle-strip li a { transition: none; }
     }
 
-    /* T-020 / LH-20: Section 6 — Model Access layout */
-    #section6 .card-grid { grid-template-columns: repeat(4, 1fr); }
+    /* T-020 / LH-20: Section 6 — Model Access (visual polish pass) */
     #section6 .code-trio {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1rem;
       margin: 1.5rem 0;
     }
+    /* S6 CompletionResult split layout */
+    #section6 .result-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+      align-items: start;
+    }
+    #section6 .result-preview { background: #1E1E1E; border-radius: 8px; overflow: hidden; }
+    #section6 .result-preview pre {
+      margin: 0;
+      padding: 1.25rem;
+      color: #D4D4D4;
+      font-size: 13px;
+      line-height: 1.9;
+      white-space: pre;
+    }
+    #section6 .result-preview .code-header { background: #2D2D2D; }
+    #section6 .result-fields { display: flex; flex-direction: column; gap: 0.5rem; }
+    #section6 .field-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: white;
+    }
+    #section6 .field-name {
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 110px;
+      flex-shrink: 0;
+      line-height: 1.5;
+    }
+    #section6 .field-info { flex: 1; font-size: 13px; line-height: 1.5; }
+    #section6 .field-info small { display: block; color: var(--ink-soft); font-size: 11px; margin-top: 3px; }
+    /* S6 Properties tabs — watch-out cards */
+    #section6 .s6-props-intro { font-size: 15px; margin: 0 0 1rem; line-height: 1.6; color: var(--text-secondary); }
+    #section6 .watch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+      margin: 1rem 0 0.5rem;
+    }
+    #section6 .watch-card {
+      background: #FFF5F5;
+      border: 1px solid #FFC9C9;
+      border-left: 4px solid var(--ms-red);
+      border-radius: 6px;
+      padding: 0.8rem 0.9rem;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    #section6 .watch-card strong {
+      display: block;
+      color: #A4262C;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 0.3rem;
+    }
+    #section6 .enables-note {
+      background: #F3FBF3;
+      border: 1px solid #9FD89F;
+      border-left: 4px solid var(--ms-green);
+      border-radius: 6px;
+      padding: 0.8rem 0.9rem;
+      font-size: 13px;
+      margin: 0.75rem 0 0.5rem;
+      line-height: 1.5;
+    }
+    #section6 .nb-chip {
+      display: inline-flex;
+      align-items: center;
+      background: #F4F1F9;
+      border: 1px solid #8661C5;
+      color: #5C2D91;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 11px;
+      border-radius: 20px;
+      margin: 0.5rem 0.3rem 0 0;
+      text-decoration: none;
+    }
+    #section6 .nb-chip:hover { background: #EAE0FF; text-decoration: none; }
+    #section6 .sec-chip {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-light);
+      border: 1px solid var(--ms-blue);
+      color: var(--ms-blue);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 11px;
+      border-radius: 20px;
+      margin: 0.5rem 0.3rem 0 0;
+      text-decoration: none;
+    }
+    #section6 .sec-chip:hover { background: #EFF6FF; text-decoration: none; }
     @media (max-width: 768px) {
-      #section6 .card-grid .example-card { grid-column: auto !important; }
+      #section6 .result-split { grid-template-columns: 1fr; }
       #section6 .code-trio { grid-template-columns: 1fr; }
+    }
+    /* S7 CSS scope — mirrors every #section6 rule above */
+    #section7 .result-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+      align-items: start;
+    }
+    #section7 .result-preview { background: #1E1E1E; border-radius: 8px; overflow: hidden; }
+    #section7 .result-preview pre {
+      margin: 0;
+      padding: 1.25rem;
+      color: #D4D4D4;
+      font-size: 13px;
+      line-height: 1.9;
+      white-space: pre;
+    }
+    #section7 .result-preview .code-header { background: #2D2D2D; }
+    #section7 .result-fields { display: flex; flex-direction: column; gap: 0.5rem; }
+    #section7 .field-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: white;
+    }
+    #section7 .field-name {
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 110px;
+      flex-shrink: 0;
+      line-height: 1.5;
+    }
+    #section7 .field-info { flex: 1; font-size: 13px; line-height: 1.5; }
+    #section7 .field-info small { display: block; color: var(--ink-soft); font-size: 11px; margin-top: 3px; }
+    #section7 .watch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+      margin: 1rem 0 0.5rem;
+    }
+    #section7 .watch-card {
+      background: #FFF5F5;
+      border: 1px solid #FFC9C9;
+      border-left: 4px solid var(--ms-red);
+      border-radius: 6px;
+      padding: 0.8rem 0.9rem;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    #section7 .watch-card strong {
+      display: block;
+      color: #A4262C;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 0.3rem;
+    }
+    #section7 .enables-note {
+      background: #F3FBF3;
+      border: 1px solid #9FD89F;
+      border-left: 4px solid var(--ms-green);
+      border-radius: 6px;
+      padding: 0.8rem 0.9rem;
+      font-size: 13px;
+      margin: 0.75rem 0 0.5rem;
+      line-height: 1.5;
+    }
+    #section7 .nb-chip {
+      display: inline-flex;
+      align-items: center;
+      background: #F4F1F9;
+      border: 1px solid #8661C5;
+      color: #5C2D91;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 11px;
+      border-radius: 20px;
+      margin: 0.5rem 0.3rem 0 0;
+      text-decoration: none;
+    }
+    #section7 .nb-chip:hover { background: #EAE0FF; text-decoration: none; }
+    #section7 .sec-chip {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-light);
+      border: 1px solid var(--ms-blue);
+      color: var(--ms-blue);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 11px;
+      border-radius: 20px;
+      margin: 0.5rem 0.3rem 0 0;
+      text-decoration: none;
+    }
+    #section7 .sec-chip:hover { background: #EFF6FF; text-decoration: none; }
+    @media (max-width: 768px) {
+      #section7 .result-split { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -3754,61 +3958,69 @@ flowchart LR
         <figcaption>Every LLM call goes through one envelope. The envelope owns retries, caching, and tracing. The caller stays the same regardless of provider.</figcaption>
       </figure>
 
-      <!-- 6. Provider card-grid — 5 cards (4-up grid + mock as 5th) -->
+      <!-- 6. Provider comparison table — 5 providers, one interface -->
       <h3>Five providers, one interface</h3>
-      <div class="card-grid">
-
-        <!-- Anthropic Claude -->
-        <div class="example-card blue">
-          <div class="card-icon">🟠</div>
-          <div class="card-title">Anthropic Claude</div>
-          <p><em>Hosted, course default.</em></p>
-          <p style="font-size:13px;"><code>~$0.25 / 1M tokens in</code> (Haiku 4.5)</p>
-          <p style="font-size:13px;font-style:italic;">Use when: production quality, no local hardware.</p>
-          <p style="font-size:12px;color:var(--ink-soft);"><code>ANTHROPIC_API_KEY</code></p>
-        </div>
-
-        <!-- OpenAI -->
-        <div class="example-card green">
-          <div class="card-icon">🟢</div>
-          <div class="card-title">OpenAI</div>
-          <p><em>Hosted alternative.</em></p>
-          <p style="font-size:13px;"><code>~$0.15 / 1M tokens in</code> (gpt-4o-mini)</p>
-          <p style="font-size:13px;font-style:italic;">Use when: organisation already on OpenAI.</p>
-          <p style="font-size:12px;color:var(--ink-soft);"><code>OPENAI_API_KEY</code></p>
-        </div>
-
-        <!-- Google Gemini -->
-        <div class="example-card orange">
-          <div class="card-icon">💎</div>
-          <div class="card-title">Google Gemini</div>
-          <p><em>Hosted, generous free tier.</em></p>
-          <p style="font-size:13px;"><code>free tier 15 RPM</code></p>
-          <p style="font-size:13px;font-style:italic;">Use when: budget is zero and you can't run local.</p>
-          <p style="font-size:12px;color:var(--ink-soft);"><code>GOOGLE_API_KEY</code></p>
-        </div>
-
-        <!-- Ollama / LM Studio -->
-        <div class="example-card purple">
-          <div class="card-icon">🖥️</div>
-          <div class="card-title">Ollama / LM Studio</div>
-          <p><em>Local, free.</em></p>
-          <p style="font-size:13px;"><code>hardware only</code></p>
-          <p style="font-size:13px;font-style:italic;">Use when: privacy-sensitive, fully offline, learning.</p>
-          <p style="font-size:12px;color:var(--ink-soft);">No key needed — needs a local server.</p>
-        </div>
-
-        <!-- Mock — 5th card, centred in second row -->
-        <div class="example-card red" style="grid-column:2/4;">
-          <div class="card-icon">🤖</div>
-          <div class="card-title">Mock</div>
-          <p><em>In-process, deterministic.</em></p>
-          <p style="font-size:13px;"><code>free</code></p>
-          <p style="font-size:13px;font-style:italic;">Use when: CI, offline tests, eval baselines that should not vary.</p>
-          <p style="font-size:12px;color:var(--ink-soft);">Pure-Python canned responses. No network.</p>
-        </div>
-
-      </div><!-- /.card-grid -->
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Provider</th>
+              <th>Type</th>
+              <th>Typical cost</th>
+              <th>Best for</th>
+              <th>Auth / Setup</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border-left:4px solid var(--ms-blue);padding-left:0.85rem;">
+                <strong>🟠 Anthropic Claude</strong><br>
+                <span class="chip chip-blue" style="font-size:11px;padding:1px 7px;margin-top:4px;display:inline-block;">Course default</span>
+              </td>
+              <td><span class="chip chip-blue">Hosted</span></td>
+              <td><code>~$0.25/1M in</code><br><small style="color:var(--ink-soft);">Haiku 4.5</small></td>
+              <td>Production quality, no local hardware needed</td>
+              <td><code>ANTHROPIC_API_KEY</code></td>
+            </tr>
+            <tr>
+              <td style="border-left:4px solid var(--ms-green);padding-left:0.85rem;">
+                <strong>🟢 OpenAI</strong>
+              </td>
+              <td><span class="chip chip-green">Hosted</span></td>
+              <td><code>~$0.15/1M in</code><br><small style="color:var(--ink-soft);">gpt-4o-mini</small></td>
+              <td>Organisation already on the OpenAI platform</td>
+              <td><code>OPENAI_API_KEY</code></td>
+            </tr>
+            <tr>
+              <td style="border-left:4px solid var(--ms-orange);padding-left:0.85rem;">
+                <strong>💎 Google Gemini</strong>
+              </td>
+              <td><span class="chip chip-orange">Hosted</span></td>
+              <td><code>Free tier 15 RPM</code></td>
+              <td>Budget is zero and you can't run local</td>
+              <td><code>GOOGLE_API_KEY</code></td>
+            </tr>
+            <tr>
+              <td style="border-left:4px solid var(--ms-purple);padding-left:0.85rem;">
+                <strong>🖥️ Ollama / LM Studio</strong>
+              </td>
+              <td><span class="chip chip-purple">Local</span></td>
+              <td><code>Hardware only</code></td>
+              <td>Privacy-sensitive, fully offline, learning</td>
+              <td>No key — needs a running local server</td>
+            </tr>
+            <tr>
+              <td style="border-left:4px solid var(--ms-red);padding-left:0.85rem;">
+                <strong>🤖 Mock</strong>
+              </td>
+              <td><span class="chip chip-red">In-process</span></td>
+              <td><code>Free</code></td>
+              <td>CI pipelines, offline tests, deterministic eval baselines</td>
+              <td>No key — pure-Python, no network call</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- 7. Three side-by-side code blocks — the only line that changes -->
       <h3>The only line that changes</h3>
@@ -3850,49 +4062,165 @@ result = client.complete(
       </div><!-- /.code-trio -->
       <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin-top:0.25rem;">The shape of <code>.complete(...)</code> is identical. Only the construction line differs. See NB 01 cells 4–6.</p>
 
-      <!-- 8. callout-info — CompletionResult fields -->
-      <aside class="callout callout-info">
-        <strong><code>CompletionResult</code> has more than <code>.text</code>.</strong>
-        <p style="margin:0.5rem 0 0.25rem;">Every call returns a structured <code>CompletionResult</code>:</p>
-        <ul style="margin:0.25rem 0 0;padding-left:1.25rem;">
-          <li><code>text</code> — the model's answer</li>
-          <li><code>provider</code> / <code>model</code> — what answered</li>
-          <li><code>latency_ms</code> — wall-clock latency</li>
-          <li><code>tokens_in</code> / <code>tokens_out</code> — usage</li>
-          <li><code>cost_estimate_usd</code> — per-call cost</li>
-          <li><code>cache_status</code> — <code>"hit"</code> / <code>"miss"</code> / <code>"bypass"</code></li>
-          <li><code>raw</code> — original SDK response object</li>
-        </ul>
-        <p style="margin:0.5rem 0 0;font-size:13px;color:var(--ink-soft);">This metadata is what §10 (Evaluation), §12 (Observability), and §14 (CI/CD) consume. The shape is locked here.</p>
-      </aside>
+      <!-- 8. CompletionResult — split visual: dark mock output + annotated field rows -->
+      <h3 style="margin-top:2.5rem;">Every call returns a <code>CompletionResult</code></h3>
+      <p style="font-size:15px;margin-bottom:1rem;color:var(--text-secondary);">Not just the answer — a full trace of <em>what happened</em>, <em>who answered</em>, and <em>what it cost</em>. Every field drives a later section of the course.</p>
+      <div class="result-split">
 
-      <!-- 9. h3 Non-determinism + code + mistake-box -->
-      <h3>Non-determinism is the defining property</h3>
-      <p>Hosted LLMs are not functions. Given the same prompt, three consecutive calls will produce three different answers — by design. The code below demonstrates this with <code>cache=False</code> to bypass any caching layer. See NB 01 cell 9.</p>
-
-      <div class="code-container">
-        <div class="code-header">
-          <span>NB 01 · Non-determinism demo (cell 9)</span>
-          <button class="copy-button" onclick="copyCode(this)">Copy</button>
+        <!-- Left: dark-theme mock output -->
+        <div class="result-preview">
+          <div class="code-header"><span>result = client.complete("In one sentence, what is LLM Ops?")</span></div>
+          <pre>result.text            = <span style="color:#CE9178">"LLM Ops is the discipline of…"</span>
+result.provider        = <span style="color:#CE9178">"anthropic"</span>
+result.model           = <span style="color:#CE9178">"claude-haiku-4-5"</span>
+result.latency_ms      = <span style="color:#B5CEA8">342.1</span>
+result.tokens_in       = <span style="color:#B5CEA8">18</span>
+result.tokens_out      = <span style="color:#B5CEA8">24</span>
+result.cost_estimate_usd = <span style="color:#B5CEA8">0.000012</span>
+result.cache_status    = <span style="color:#CE9178">"miss"</span>
+result.raw             = <span style="color:#808080">&lt;anthropic.Response …&gt;</span></pre>
         </div>
-        <pre><code class="language-python">variance_prompt = "List three risks of deploying an LLM in production. Be specific."
 
-if not os.getenv("ANTHROPIC_API_KEY"):
-    print("[skipped — no key]")
-else:
-    client = LLMClient(cache=False)
-    for run_number in range(1, 4):
-        result = client.complete(
-            variance_prompt, cache=False, temperature=0.9, max_tokens=160
-        )
-        print(f"Run {run_number}:")
-        print(result.text)
-        print()</code></pre>
-      </div>
+        <!-- Right: field annotation rows -->
+        <div class="result-fields">
+          <div class="field-row" style="border-left:3px solid var(--ms-blue);">
+            <div class="field-name" style="color:var(--ms-blue);">.text</div>
+            <div class="field-info">The model's answer
+              <small>The only field most code reads — all other fields are production metadata</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-green);">
+            <div class="field-name" style="color:var(--ms-green);">.provider<br>.model</div>
+            <div class="field-info">Audit trail — which model answered
+              <small>Critical for A/B comparisons and verifying provider swaps</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-orange);">
+            <div class="field-name" style="color:var(--ms-orange);">.latency_ms<br>.tokens_in<br>.tokens_out</div>
+            <div class="field-info">Performance signal
+              <small>→ <a href="#section12">§12 Observability</a> uses these for p95 latency alerts</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-purple);">
+            <div class="field-name" style="color:var(--ms-purple);">.cost_estimate_usd</div>
+            <div class="field-info">Per-call economics
+              <small>→ <a href="#section14">§14 CI/CD</a> adds budget gates using this field</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid #0097B2;">
+            <div class="field-name" style="color:#0097B2;">.cache_status</div>
+            <div class="field-info">"hit" / "miss" / "bypass"
+              <small>→ <a href="#section9">§9 Caching</a> — the cache decision, made observable</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-red);">
+            <div class="field-name" style="color:var(--ms-red);">.raw</div>
+            <div class="field-info">Original SDK response object
+              <small>→ <a href="#section12">§12 Observability</a> — escape hatch for deep debugging</small>
+            </div>
+          </div>
+        </div>
 
-      <aside class="mistake-box">
-        <p><strong>🚫 Mistake:</strong> treating an LLM call like a deterministic function. <em>"It worked when I tested it"</em> doesn't generalize. Every habit you have from regular software — caching by input, retrying on failure, comparing outputs — needs a rethink. The rest of this course is that rethink.</p>
-      </aside>
+      </div><!-- /.result-split -->
+      <p style="font-size:12px;color:var(--ink-soft);margin-top:0.25rem;">NB 01 cells 4, 9, and 12 print a live result — run them to see real values. The shape is fixed here; every later section consumes it.</p>
+
+      <!-- 9. Three LLM-call properties — tabbed (no inline code; live demo in NB 01) -->
+      <h3>Three properties every LLM call has — and every app must handle</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin-bottom:1.25rem;">These aren't edge cases. They're the defining behaviours of every LLM call in production. Select a tab to see what to watch for and which section goes deep.</p>
+
+      <div class="layer-tabs">
+        <div class="tab-nav" role="tablist" aria-label="LLM call properties">
+          <button class="tab-btn active" role="tab" aria-selected="true"  aria-controls="tab-s6-nondet"  data-tab="s6-nondet"  style="--active-color:var(--ms-orange)">⚡ Non-determinism</button>
+          <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="tab-s6-cache"   data-tab="s6-cache"   style="--active-color:var(--ms-blue)">💾 Cache observability</button>
+          <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="tab-s6-failure" data-tab="s6-failure" style="--active-color:var(--ms-red)">🔥 Failure surfacing</button>
+        </div>
+
+        <!-- Tab 1: Non-determinism -->
+        <div class="tab-panel active" id="tab-s6-nondet" role="tabpanel">
+          <div style="padding:1.5rem;">
+            <p class="s6-props-intro">Three runs of the same prompt → three different answers. Not a bug — it's the specification. Temperature + sampling mean variance is always present; your testing habits from deterministic software don't transfer.</p>
+            <div class="watch-grid">
+              <div class="watch-card">
+                <strong>⚠ Watch out</strong>
+                Caching by input alone won't prevent variance — a cache <em>miss</em> calls the model live, and each live call returns something different.
+              </div>
+              <div class="watch-card">
+                <strong>⚠ Watch out</strong>
+                Exact-string assertions on LLM output fail intermittently. <em>"It passed when I ran it"</em> is not a repeatable test result.
+              </div>
+              <div class="watch-card">
+                <strong>⚠ Watch out</strong>
+                <code>temperature=0</code> reduces variance but does not eliminate it — the distribution has a peak, not a spike.
+              </div>
+            </div>
+            <div class="enables-note">
+              <strong style="color:var(--ms-green);">✓ What this forces you to build:</strong> evaluation over distributions, not single outputs. Instead of <em>"did it say X?"</em> you ask <em>"does it say X ≥ 90% of the time?"</em> — that's §10 Evaluation.
+            </div>
+            <div>
+              <span class="nb-chip">📓 NB 01 · cells 8–10</span>
+              <a class="sec-chip" href="#section10">→ §10 Evaluation (deep dive)</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Cache observability -->
+        <div class="tab-panel" id="tab-s6-cache" role="tabpanel">
+          <div style="padding:1.5rem;">
+            <p class="s6-props-intro">The cache emits an event for every decision — <code>"miss"</code>, <code>"hit"</code>, or <code>"bypass"</code>. Listening to those events turns the cache from a black box into a trace source you can monitor.</p>
+            <div class="watch-grid">
+              <div class="watch-card">
+                <strong>⚠ Watch out</strong>
+                Changing a prompt without bumping <code>prompt_version</code> serves stale cached answers — the cache key includes the version string, not just the prompt text.
+              </div>
+              <div class="watch-card">
+                <strong>⚠ Watch out</strong>
+                A <code>"bypass"</code> status means <code>cache=False</code> was set by the caller. Unexpected bypasses in logs mean someone is opting out of caching.
+              </div>
+              <div class="watch-card">
+                <strong>⚠ Watch out</strong>
+                A high hit-rate isn't always good — if your prompt has a bug, a high hit-rate means many users receive the same wrong answer.
+              </div>
+            </div>
+            <div class="enables-note">
+              <strong style="color:var(--ms-green);">✓ What this forces you to build:</strong> a versioning discipline. <code>prompt_version</code> is the invalidation contract — bump it every time the prompt changes so the cache knows to refresh.
+            </div>
+            <div>
+              <span class="nb-chip">📓 NB 01 · cells 11–13</span>
+              <a class="sec-chip" href="#section9">→ §9 Caching (deep dive)</a>
+              <a class="sec-chip" href="#section12">→ §12 Observability</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Failure surfacing -->
+        <div class="tab-panel" id="tab-s6-failure" role="tabpanel">
+          <div style="padding:1.5rem;">
+            <p class="s6-props-intro">When a provider rejects a call — wrong key, rate limit, network timeout — the client raises a typed exception naming the provider and the failure kind. The notebook catches it and continues; production must log, alert, and decide.</p>
+            <div class="watch-grid">
+              <div class="watch-card">
+                <strong>⚠ Watch out</strong>
+                A bare <code>except Exception</code> that prints and continues hides <em>which provider failed</em> and <em>why</em>. Observability needs the error type, not a swallowed exception.
+              </div>
+              <div class="watch-card">
+                <strong>⚠ Watch out</strong>
+                Rate-limit errors need exponential back-off, not an immediate retry — hammering a rate-limited endpoint makes the problem significantly worse.
+              </div>
+              <div class="watch-card">
+                <strong>⚠ Watch out</strong>
+                A notebook that catches an error and moves on is fine for demos. In production, a caught error with no alert is a <em>silent failure</em>.
+              </div>
+            </div>
+            <div class="enables-note">
+              <strong style="color:var(--ms-green);">✓ What this forces you to build:</strong> structured error logging — capture <code>type(e).__name__</code>, the provider, and a timestamp. That's what §12 Observability turns into a dashboard alert.
+            </div>
+            <div>
+              <span class="nb-chip">📓 NB 01 · cells 14–15</span>
+              <a class="sec-chip" href="#section12">→ §12 Observability (deep dive)</a>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.layer-tabs -->
 
       <!-- 10. Expandable — decision matrix -->
       <details class="table-fold">
@@ -3926,65 +4254,7 @@ else:
         </div>
       </details>
 
-      <!-- 11. h3 Caching is observable + code from NB 01 cells 12–13 -->
-      <h3>Caching is observable</h3>
-      <p>The cache layer emits an event for every decision it makes. Wrapping <code>LLMCache</code> with an <code>on_cache_event</code> callback turns the cache into a trace source. NB 01 cell 12 demonstrates miss followed by hit; cell 13 bumps <code>prompt_version</code> and produces a fresh miss — <code>prompt_version</code> is the invalidation contract. This is the foundation for §9's caching deep dive and §12's <code>cache_status</code> trace field.</p>
-
-      <div class="code-container">
-        <div class="code-header">
-          <span>NB 01 · Cache hit / miss (cell 12)</span>
-          <button class="copy-button" onclick="copyCode(this)">Copy</button>
-        </div>
-        <pre><code class="language-python">events: list[str] = []
-cache = LLMCache(on_cache_event=lambda status: events.append(status))
-client = LLMClient(cache=cache, prompt_version="v1")
-
-prompt = "What's the capital of France?"
-r1 = client.complete(prompt, max_tokens=32)  # expect miss
-r2 = client.complete(prompt, max_tokens=32)  # expect hit
-print("After two identical calls:", events)   # ['miss', 'hit']
-print("r1.cache_status:", r1.cache_status, "· r2.cache_status:", r2.cache_status)</code></pre>
-      </div>
-
-      <div class="code-container">
-        <div class="code-header">
-          <span>NB 01 · prompt_version invalidation (cell 13)</span>
-          <button class="copy-button" onclick="copyCode(this)">Copy</button>
-        </div>
-        <pre><code class="language-python">client_v2 = LLMClient(cache=cache, prompt_version="v2")
-r3 = client_v2.complete(prompt, max_tokens=32)    # expect miss (key changed)
-print("After bumping prompt_version:", events)     # ['miss', 'hit', 'miss']
-print("r3.cache_status:", r3.cache_status)</code></pre>
-      </div>
-
-      <!-- 12. h3 Failure surfaces cleanly + NB 01 cell 15 code -->
-      <h3>Failure surfaces cleanly</h3>
-      <p>When a provider rejects a request — wrong key, rate limit, network failure — the client raises a typed exception that names the provider and the failure kind. NB 01 cell 15 demonstrates this live against real Anthropic with a deliberately invalid key; the notebook continues regardless.</p>
-
-      <div class="code-container">
-        <div class="code-header">
-          <span>NB 01 · Failure surfacing (cell 15)</span>
-          <button class="copy-button" onclick="copyCode(this)">Copy</button>
-        </div>
-        <pre><code class="language-python">import os
-
-saved = os.environ.get("ANTHROPIC_API_KEY")
-os.environ["ANTHROPIC_API_KEY"] = "invalid_key_for_demo_purposes"
-
-try:
-    bad_client = LLMClient(provider="anthropic")
-    result = bad_client.complete("This call will fail.", max_tokens=16)
-    print("Unexpected success:", result.text)
-except Exception as e:
-    print(f"Caught {type(e).__name__}: {e}")
-finally:
-    if saved is not None:
-        os.environ["ANTHROPIC_API_KEY"] = saved
-    else:
-        os.environ.pop("ANTHROPIC_API_KEY", None)</code></pre>
-      </div>
-
-      <p style="font-size:14px;color:var(--ink-soft);"><em>The error names the provider and the failure type. That's what observability needs to capture.</em></p>
+      <!-- 11–12. Caching + Failure content now in Properties tabs above -->
 
       <!-- 13. notebook-pointer block — exact text from PLAN.md item 13 -->
       <div class="notebook-pointer">
@@ -4008,6 +4278,345 @@ finally:
 
     </section>
     <!-- End Section 6 (LH-20) -->
+
+    <!-- ==================================================================
+         Section 7 — Prompting & Grounding  (LH-21)
+         Part 3 · Prototype · NB 01 cells 10–25
+         ================================================================== -->
+    <section id="section7" class="section" aria-labelledby="section7-title">
+
+      <!-- 1. section-meta -->
+      <div class="section-meta">
+        <span class="progress-indicator">Section 7 of 16 · Part 3 — Prototype</span>
+      </div>
+
+      <!-- 2. opening-hook — verbatim from PLAN.md -->
+      <div class="opening-hook">
+        The same model produces wildly different output depending on how you ask. What are the levers?
+      </div>
+
+      <!-- 3. h2 — verbatim from PLAN.md -->
+      <h2 id="section7-title">Prompting &amp; Grounding</h2>
+
+      <!-- 4. Intro paragraph — verbatim from PLAN.md -->
+      <p class="intro">
+        A prompt is the only knob you have before the model. There are four levers — system message, few-shot examples, structured output, retrieved context — and each one stacks on the previous. This section walks them in order and ends with all four applied to one realistic participant question; §8 takes the last lever (grounding) and scales it from "one document pasted in" to "thousands retrieved automatically."
+      </p>
+
+      <!-- 5. Prompt-anatomy diagram (Mermaid) — 5-layer stack -->
+      <figure class="mermaid-figure" style="max-width:100%">
+        <div class="mermaid" style="max-width:100%">
+graph TD
+    A["🔵 SYSTEM MESSAGE<br/>scope · tone · refusal rules"]:::sys
+    B["🟡 FEW-SHOT EXAMPLES<br/>optional — shapes consistency"]:::few
+    C["🟢 RETRIEVED CONTEXT<br/>optional — grounds the answer"]:::ctx
+    D["⬛ USER MESSAGE<br/>the actual question"]:::usr
+    E["🟣 OUTPUT SCHEMA<br/>optional — structures the response"]:::out
+
+    A --> B --> C --> D --> E
+
+    classDef sys  fill:#EFF6FF,stroke:#0078D4,stroke-width:2px,color:#1B1B1B
+    classDef few  fill:#FFF4CE,stroke:#F7630C,stroke-width:2px,color:#1B1B1B
+    classDef ctx  fill:#DFF6DD,stroke:#107C10,stroke-width:2px,color:#1B1B1B
+    classDef usr  fill:#2B2B2B,stroke:#888,stroke-width:2px,color:#F0F0F0
+    classDef out  fill:#F5F0FF,stroke:#8661C5,stroke-width:2px,color:#1B1B1B
+        </div>
+        <figcaption>Four optional layers around a required user message. Each layer has a specific job. Each one stacks.</figcaption>
+      </figure>
+
+      <!-- 6. Lever 1 — System message ──────────────────────────────────── -->
+      <h3>Lever 1 — System message</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin-bottom:1rem;">
+        The system message sets the persona, scope, and tone for the entire conversation. Without one, the model answers as a general assistant. With one, it answers as <em>your</em> assistant — constrained, terse, or domain-specific, depending on what you need.
+      </p>
+
+      <!-- Side-by-side: without vs with system message (Design Decision 1) -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1.5rem 0;">
+        <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;padding:1rem;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;margin-bottom:.5rem;">Without system message</div>
+          <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">user_prompt = "Explain the operational risk
+         of letting an LLM call
+         production tools."
+
+<span style="color:#888;"># → verbose 200-word reply with
+# markdown headers and caveats</span></pre>
+        </div>
+        <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;padding:1rem;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;margin-bottom:.5rem;">With system message</div>
+          <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">system = "You are a terse senior SRE.
+          Reply in one sentence and
+          use plain language."
+
+<span style="color:#888;"># → "Without strict human-in-the-loop
+# controls, an LLM calling production
+# tools can silently corrupt state,
+# exceed rate limits, or exfiltrate
+# data at machine speed."</span></pre>
+        </div>
+      </div>
+      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin-top:0.25rem;">Same user prompt. Different system. Different program. See NB 01 cells 10–11.</p>
+
+      <!-- 7. Lever 2 — Few-shot examples ──────────────────────────────── -->
+      <h3>Lever 2 — Few-shot examples</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin-bottom:1rem;">
+        Zero-shot relies entirely on the model's training. Few-shot shows the model exactly what <em>shape</em> you want — same format, same label vocabulary, same tone. For participant message classification, it's the difference between "schedule_question" reliably and a free-form paragraph sometimes.
+      </p>
+      <div class="example-box">
+        <pre style="font-size:13px;line-height:1.7;white-space:pre-wrap;">Classify each participant message into one of:
+  policy_question, schedule_question, assignment_question, out_of_scope.
+Reply with one label only.
+
+Message: 'When does the Thursday live session start?'
+Label: schedule_question
+
+Message: 'Can you help me write my company's leave policy?'
+Label: out_of_scope
+
+Message: 'When is the deadline for assignment 2?'
+Label: <span style="color:var(--ms-green);font-weight:700;">schedule_question</span>  ← model reliably picks one label</pre>
+      </div>
+      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin-top:0.5rem;">With examples the output reliably picks one of the four labels. Without them, the model may add commentary or use different terms. NB 01 cells 17–18 runs this against real Anthropic.</p>
+
+      <!-- 8. Lever 3 — Structured output (JSON) ───────────────────────── -->
+      <h3>Lever 3 — Structured output (JSON)</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin-bottom:1rem;">
+        The same classification prompt — extended with a JSON schema instruction — makes the output machine-parseable. Downstream code can read <code>result["category"]</code> directly instead of parsing a sentence. Add a <code>confidence</code> field and you have a triage signal too.
+      </p>
+      <div class="code-container">
+        <div class="code-header">
+          <span>NB 01 cell 20 — JSON output schema</span>
+          <button class="copy-button" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code class="language-python">json_prompt = f"""You are the TalentSprint program assistant triage helper.
+Classify the participant message into exactly one of these labels:
+policy_question, schedule_question, assignment_question, out_of_scope.
+
+Participant message: '{message_to_classify}'
+
+Respond as strict JSON with this schema:
+{{"category": "&lt;one of the four&gt;", "confidence": 0.0, "reason": "&lt;one short sentence&gt;"}}
+Do not wrap the JSON in markdown fences.
+"""
+
+result = client.complete(json_prompt, cache=False, max_tokens=120)
+parsed = json.loads(result.text.strip())
+# → {"category": "schedule_question", "confidence": 0.95, "reason": "..."}</code></pre>
+      </div>
+      <aside class="callout callout-warning">
+        <strong>Caveat:</strong> structured output is <em>requested</em>, not guaranteed. Always parse with <code>try/except</code> and have a fallback — NB 01 cell 20 demonstrates both the clean parse and the fallback path. Some providers strip the JSON in markdown fences; the cell handles that too.
+      </aside>
+
+      <!-- 9. Lever 4 — Retrieved context (bridge to RAG) ──────────────── -->
+      <h3>Lever 4 — Retrieved context (the bridge to RAG)</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin-bottom:1rem;">
+        Paste the relevant document into the prompt and the model answers from it — not from training data. One document, one question, a dramatically different answer. This is the grounding pattern. §8 scales it from "one doc pasted in" to automatic retrieval across hundreds.
+      </p>
+
+      <!-- Cold vs Grounded comparison (Design Decision 1) -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1.5rem 0;">
+        <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;padding:1rem;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;margin-bottom:.5rem;">Cold — no context</div>
+          <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">User: A participant asks: is there
+      a grace period for late
+      submissions in this program?
+
+Model: "Yes — most programs allow
+       a 3-day grace period without
+       penalty."
+<span style="color:#A4262C;font-size:11px;">← invented; the policy explicitly
+  forbids automatic grace periods.</span></pre>
+        </div>
+        <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;padding:1rem;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;margin-bottom:.5rem;">Grounded — policy doc pasted in</div>
+          <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">User: [policy document body]
+      A participant asks: is there
+      a grace period for late
+      submissions in this program?
+
+Model: "According to the program policy
+       (Late Submission Policy), there is
+       no automatic grace period. Late
+       submissions require pre-approved
+       extension requests."</pre>
+        </div>
+      </div>
+      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin-top:0.25rem;">Same model, same question — different answer because the second has the source of truth in scope. NB 01 cells 21–22 runs this live.</p>
+
+      <aside class="callout callout-info">
+        <strong>What §8 will add:</strong> in cells 21–22 we hand-picked the one document to paste in. In a real system we don't know which document has the answer — we might have hundreds, and the user's question might not match any single one cleanly. <strong>§8 (RAG) builds the retrieval layer that picks the right document(s) automatically — and shows what happens when it picks the wrong ones.</strong>
+      </aside>
+
+      <!-- 10. Lever 5 — Prompts are artifacts ─────────────────────────── -->
+      <h3>Lever 5 — Prompts are artifacts</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin-bottom:1rem;">
+        Once a prompt starts driving production behavior, it's a versioned artifact — not a print statement. The cache key includes <code>prompt_version</code>; bump it every time you make a semantic change, or you'll serve stale cached answers that hide your edit. The eval suite, observability dashboard, and CI gate all read this field.
+      </p>
+      <div class="code-container">
+        <div class="code-header">
+          <span>NB 01 cells 12–14 — prompt_version is the invalidation contract</span>
+          <button class="copy-button" onclick="copyCode(this)">Copy</button>
+        </div>
+        <pre><code class="language-python"># cache key = (prompt_text, prompt_version, model)
+client = LLMClient(cache=cache, prompt_version="v1")
+r1 = client.complete(prompt)   # miss → cached as v1
+r2 = client.complete(prompt)   # hit  ← same key
+
+# Bump prompt_version when the prompt changes semantically
+client_v2 = LLMClient(cache=cache, prompt_version="v2")
+r3 = client_v2.complete(prompt)  # fresh miss — different cache key
+print(events)  # ['miss', 'hit', 'miss']</code></pre>
+      </div>
+      <div style="margin-top:0.5rem;">
+        <span class="nb-chip">📓 NB 01 · cells 12–14</span>
+        <a class="sec-chip" href="#section9">→ §9 Caching (deep dive)</a>
+      </div>
+      <div class="mistake-box">
+        <strong>Mistake:</strong> treating prompts like print statements you edit casually. A prompt is code. Version it like code. The cache key, your evals, your observability, and your CI gates all depend on <code>prompt_version</code> being a discipline, not a magic string. §5 row 13 fails exactly this way; §9 has the deep dive.
+      </div>
+
+      <!-- 11. Expandable — Inline vs externalized prompt files ─────────── -->
+      <details class="table-fold">
+        <summary>📁 Practitioner depth — Inline prompts vs externalized prompt files</summary>
+        <div style="padding:1rem 1.5rem;background:#F8F8F8;">
+          <p style="font-style:italic;margin:0 0 1rem;"><strong>Scenario:</strong> You shipped the first prototype. The same classification prompt now lives in three places: the notebook, the workflow node, and a one-off script. A colleague edits one. How do you avoid drift?</p>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Approach</th>
+                  <th>Where it lives</th>
+                  <th>When to use</th>
+                  <th>Drift risk</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Inline f-string</strong></td>
+                  <td>At the call site, in the source file</td>
+                  <td>Teaching artifacts (notebooks); one-off scripts</td>
+                  <td><span class="chip chip-red">High</span> once reused</td>
+                </tr>
+                <tr>
+                  <td><strong><code>.md</code> template + <code>load_prompt(name, version)</code></strong></td>
+                  <td><code>src/llm/prompts/&lt;name&gt;.&lt;version&gt;.md</code></td>
+                  <td>Production code (<code>src/workflow/</code>, <code>src/rag/</code>, etc.)</td>
+                  <td><span class="chip chip-green">Low</span> — filename <em>is</em> the version</td>
+                </tr>
+                <tr>
+                  <td><strong>LangChain <code>PromptTemplate</code></strong></td>
+                  <td>Object instantiated in code or loaded from hub</td>
+                  <td>When already deep in LangChain</td>
+                  <td><span class="chip chip-orange">Medium</span> — version is a runtime attribute</td>
+                </tr>
+                <tr>
+                  <td><strong>YAML/JSON config + Jinja</strong></td>
+                  <td>Separate config tree</td>
+                  <td>Large prompt libraries with structured metadata</td>
+                  <td><span class="chip chip-green">Low</span> — but conceptual cost is high</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:14px;font-style:italic;margin:0.75rem 0 0;color:var(--ink-soft);">In this course: notebooks keep prompts inline (you need to see them); <code>src/</code> uses <code>.md</code> files via <code>load_prompt()</code> (decision D-019). The pattern shows up in <code>src/workflow/nodes.py</code> — every node loads its prompt by name + version. Bumping <code>prompt_version</code> from <code>v1</code> to <code>v2</code> invalidates the cache for that prompt only.</p>
+        </div>
+      </details>
+
+      <!-- 12. Closing arc ── All four levers, one question ─────────────── -->
+      <h3 style="margin-top:2.5rem;">All four levers, one question</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin-bottom:1rem;">NB 01 cells 23–25 put it all together: system message + few-shot shape + grounding context + JSON output schema — one call, full metadata captured.</p>
+      <div class="result-split">
+
+        <!-- Left: dark-theme setup preview -->
+        <div class="result-preview">
+          <div class="code-header"><span>Cell 25 — setup (NB 01)</span></div>
+          <pre>participant_question = <span style="color:#CE9178">"A participant asks: can I get
+  extra time on assignment 2 if I'm sick?"</span>
+
+system_msg = <span style="color:#CE9178">"You are the TalentSprint program
+  assistant. Answer only using the program
+  documents provided. If the documents
+  don't contain the answer, say so
+  explicitly. Cite the source section."</span>
+
+policy_text = policy_path.read_text(...)
+
+user_prompt = grounding_context
+            + question
+            + output_schema_request
+
+client = LLMClient(
+    cache=cache,
+    prompt_version=<span style="color:#CE9178">"program_assistant_v1"</span>
+)
+result = client.complete(
+    user_prompt, system=system_msg)</pre>
+        </div>
+
+        <!-- Right: annotated output fields -->
+        <div class="result-fields">
+          <div class="field-row" style="border-left:3px solid var(--ms-blue);">
+            <div class="field-name" style="color:var(--ms-blue);">answer</div>
+            <div class="field-info">Yes — submit a documented extension request to the program team before the deadline; see policy §4.2.
+              <small>Grounded to the actual document; not invented</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-green);">
+            <div class="field-name" style="color:var(--ms-green);">grounded<br/>source</div>
+            <div class="field-info"><code>true</code> · Section 4.2 — Late Submission Policy
+              <small>JSON fields: lever 3 (structured output) doing its job</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-orange);">
+            <div class="field-name" style="color:var(--ms-orange);">confidence</div>
+            <div class="field-info"><code>0.85</code>
+              <small>Model's self-reported confidence — triage signal for §10 Evaluation</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-purple);">
+            <div class="field-name" style="color:var(--ms-purple);">provider<br/>model</div>
+            <div class="field-info"><code>anthropic · claude-haiku-4-5</code>
+              <small>Audit trail → §12 Observability</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid #0097B2;">
+            <div class="field-name" style="color:#0097B2;">cache_status<br/>latency_ms</div>
+            <div class="field-info"><code>miss · ~487 ms</code>
+              <small>→ §9 Caching; §12 Observability p95 alert</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-red);">
+            <div class="field-name" style="color:var(--ms-red);">tokens<br/>cost</div>
+            <div class="field-info"><code>~1240 in / 87 out · ~$0.000412</code>
+              <small>→ §14 CI/CD budget gate</small>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.result-split -->
+      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin-top:0.5rem;">One LLM call. Four levers applied. Full metadata captured. §8 turns this into many — one query, hundreds of documents, automatic retrieval.</p>
+
+      <!-- 13. notebook-pointer — verbatim from PLAN.md item 13 -->
+      <div class="notebook-pointer">
+        <strong>Live demo:</strong> open <code>notebooks/01_core_llm_workflow.ipynb</code> and run cells 16–25.
+        <br/><br/>
+        Cells 16–17 demonstrate few-shot classification (zero-shot vs two-shot). Cells 18–19 demonstrate structured JSON output with parse and fallback. Cells 20–21 demonstrate document grounding (cold vs grounded answer). Cell 22 explains prompt versioning and cache invalidation. Cells 23–25 are the closing arc: all four levers applied to one real participant question, with full metadata printed.
+      </div>
+
+      <!-- 14. takeaway-box — verbatim from PLAN.md item 14 -->
+      <div class="takeaway-box">
+        <div class="icon">💡</div>
+        <div style="overflow:hidden;">
+          <p><strong>The lesson:</strong> prompting is the cheapest, fastest way to change behavior — and the easiest place to ship undisciplined changes. Five levers (system / few-shot / structured / grounded / versioned) give you the control surface. The next section scales the grounding lever from one document to many.</p>
+        </div>
+      </div>
+
+      <!-- 15. Cross-references footer line — verbatim from PLAN.md item 15 -->
+      <p style="font-size:13px;color:var(--ink-soft);border-top:1px solid var(--border-color);padding-top:0.75rem;margin-top:1.5rem;">
+        See also: <a href="#section5">§5</a> row 1 (hallucinated policy — preview in this section's Lever 4; full demo in <a href="#section8">§8</a>) · <a href="#section5">§5</a> row 13 (stale cache — preview in Lever 5; full demo in <a href="#section9">§9</a>) · <a href="#section9">§9</a> caching sidebar · <a href="#section11">§11</a> (output guardrails layer on top of these prompts).
+      </p>
+
+    </section>
+    <!-- End Section 7 (LH-21) -->
 
   </main>
 
