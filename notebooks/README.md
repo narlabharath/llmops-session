@@ -98,3 +98,36 @@ Or open in Jupyter Lab and run cells top-to-bottom.
 ### Cells that need an API key
 
 Cell 8 uses Anthropic when `ANTHROPIC_API_KEY` is present; without one it falls back to `LLMClient(provider="mock")` and the notebook still executes. Cells 12, 16, 18, 20, 22, and 24 use notebook-local deterministic helpers, so they do not require a key.
+
+---
+
+## 04_evaluation.ipynb
+
+Demonstrates the evaluation harness end-to-end against the program-assistant workflow: load the golden CSV, run the eval pass, build and dump reports, inspect groundedness judging, and compare a deliberate regression against the baseline.
+
+Consumes `src.evals.run_evals`, `src.evals.build_report`, `src.evals.print_report`, `src.evals.dump_report`, and `src.evals.judge_groundedness`, building on `src.workflow.run_workflow` and the corpus setup from earlier notebooks.
+
+### Run
+
+From inside `llmops-session/`:
+
+```bash
+pip install -r requirements.txt
+# Optionally set ANTHROPIC_API_KEY in .env to use Anthropic in the eval and judge cells
+jupyter nbconvert --execute --to notebook --inplace notebooks/04_evaluation.ipynb
+```
+
+Or open in Jupyter Lab and run cells top-to-bottom.
+
+### Cells
+
+- Cells 0–5 — setup, golden CSV loading, and notebook scaffolding
+- Cells 6–9 — corpus ingestion, eval pass, and per-row result table
+- Cells 10–13 — report aggregation and artifact dump for CI-style consumption
+- Cells 14–17 — groundedness verdict inspection and overconfident-answer judge demo
+- Cells 18–21 — deliberate regression run and baseline-vs-regression diff
+- Cells 22–25 — ship recap, NB 05 bridge, and API-key note
+
+### Cells that need an API key
+
+Cell 17 requires a valid `ANTHROPIC_API_KEY` for the live groundedness judge demo; without one it prints `[skipped — no key]`. Cells 8 and 19 use Anthropic when a key is present, but fall back to `LLMClient(provider="mock")` so the notebook still executes without one.
