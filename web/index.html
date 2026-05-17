@@ -1537,8 +1537,49 @@
       margin: 1.25rem 0;
       align-items: start;
     }
+    #section8 .result-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.25rem 0;
+      align-items: start;
+    }
+    #section8 .result-preview { background: #1E1E1E; border-radius: 8px; overflow: hidden; }
+    #section8 .result-preview pre {
+      margin: 0;
+      padding: 1.25rem;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      color: #E8E8E8;
+      font-size: 13px;
+      line-height: 1.9;
+      white-space: pre;
+    }
+    #section8 .result-preview .code-header { background: #2D2D2D; }
+    #section8 .result-fields { display: flex; flex-direction: column; gap: 0.5rem; }
+    #section8 .field-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: white;
+    }
+    #section8 .field-name {
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 120px;
+      flex-shrink: 0;
+      line-height: 1.5;
+    }
+    #section8 .field-info { flex: 1; font-size: 13px; line-height: 1.5; }
+    #section8 .field-info small { display: block; color: var(--ink-soft); font-size: 11px; margin-top: 3px; }
     @media (max-width: 768px) {
       #section8 .s8-split { grid-template-columns: 1fr; }
+      #section8 .result-split { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -4727,13 +4768,13 @@ r3 = client_v2.complete(prompt)
       <figure style="margin:1.5rem 0;max-width:900px;">
         <div class="diagram diagram-large">
           <div class="mermaid">
-flowchart TB
+flowchart LR
     subgraph ingest["Ingest — runs once per corpus version"]
-        direction LR
+        direction TB
         docs["Documents<br/>(.md / .pdf)"] --> chunk["Chunk<br/>(size N)"] --> emb1["Embed<br/>(model M)"] --> vs[("Vector store<br/>(Chroma)")]
     end
     subgraph query["Retrieve + Generate — per question"]
-        direction LR
+        direction TB
         q["Query"] --> emb2["Embed<br/>(same M)"] --> sim["Similarity<br/>+ re-rank"] --> rc["Retrieved<br/>chunks"] --> pr["Prompt =<br/>system + chunks + Q"] --> llm["LLM"]
     end
     vs -->|"persisted index"| sim
@@ -4776,8 +4817,55 @@ flowchart TB
       <h3>Baseline retrieval</h3>
       <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">With the store persisted, a retrieval call returns ranked <code>RetrievedDocument</code> objects. Results are ordered by <strong>similarity score</strong> — not by document authority. That gap is exactly what Failure 2 exploits.</p>
 
-      <div style="margin:1rem 0;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:.6rem;">Query: "What is the late submission policy?" → k=5 results</div>
+      <!-- retrieve() call + RetrievedDocument field schema -->
+      <div class="result-split">
+        <div class="result-preview">
+          <div class="code-header"><span>NB 02 — retrieve a question</span></div>
+          <pre><span style="color:#9CDCFE">results</span> = <span style="color:#9CDCFE">rag</span>.<span style="color:#DCDCAA">retrieve</span>(
+    <span style="color:#F1956A">"What is the late submission policy?"</span>,
+    k=<span style="color:#B5CEA8">5</span>
+)
+
+<span style="color:#6A9955"># results is a list of RetrievedDocument</span>
+<span style="color:#C586C0">for</span> <span style="color:#9CDCFE">doc</span> <span style="color:#C586C0">in</span> <span style="color:#9CDCFE">results</span>:
+    <span style="color:#DCDCAA">print</span>(
+        <span style="color:#9CDCFE">doc</span>.document_id,
+        <span style="color:#9CDCFE">doc</span>.source_priority,
+        <span style="color:#9CDCFE">doc</span>.score,
+        <span style="color:#9CDCFE">doc</span>.text[:<span style="color:#B5CEA8">80</span>]
+    )</pre>
+        </div>
+        <div class="result-fields">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:.4rem;">RetrievedDocument — fields explained</div>
+          <div class="field-row" style="border-left:3px solid var(--ms-blue);">
+            <div class="field-name" style="color:var(--ms-blue);">document_id</div>
+            <div class="field-info"><code>"program_policy"</code>
+              <small>Which source document this chunk came from — used for citation and priority filtering</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-orange);">
+            <div class="field-name" style="color:var(--ms-orange);">source_priority</div>
+            <div class="field-info"><code>1</code>
+              <small>Authority rank you set at ingest time — lower = more authoritative. Failure 2's fix sorts by this.</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-green);">
+            <div class="field-name" style="color:var(--ms-green);">score</div>
+            <div class="field-info"><code>0.9841</code>
+              <small>Cosine similarity (0–1). High = semantically close to the query. Does not reflect document authority.</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-purple);">
+            <div class="field-name" style="color:var(--ms-purple);">text</div>
+            <div class="field-info"><code>"Participants must attend at least 80%..."</code>
+              <small>The actual chunk injected into the prompt. Chunk size determines how much context the LLM sees.</small>
+            </div>
+          </div>
+        </div>
+      </div><!-- /.result-split -->
+
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin:1rem 0 .6rem;">Query: "What is the late submission policy?" → k=5 results</div>
+      <div style="margin:0 0 1rem;">
         <div style="display:flex;flex-direction:column;gap:.5rem;">
           <div style="background:#fff;border:1px solid #D0D7DE;border-left:3px solid var(--ms-blue);border-radius:6px;padding:.7rem 1rem;display:grid;grid-template-columns:130px 1fr;gap:.2rem .75rem;font-size:13px;">
             <span style="color:var(--ink-soft);">document_id</span><span><strong>program_policy</strong></span>
