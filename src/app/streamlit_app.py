@@ -1,6 +1,8 @@
-"""Streamlit MVP scaffold for the PLAN.md S-13 composition contract.
+"""Streamlit MVP for the PLAN.md S-13 composition contract.
 
-This entry point wires the existing src layers into the four-panel app shell.
+The app renders four panels: question, answer, trace, and history.
+Each submission flows through run_input_guardrails, trace_workflow(run_workflow, ...),
+and run_output_guardrails before the latest result is displayed and stored.
 """
 
 from __future__ import annotations
@@ -38,6 +40,7 @@ PERSIST_DIR_NAME = "data/chroma_app"
 INPUT_BLOCK_MESSAGE_PREFIX = "This question was blocked before reaching the assistant"
 OUTPUT_BLOCK_MESSAGE_PREFIX = "[Answer redacted for safety"
 HISTORY_QUERY_PREVIEW_CHARS = 60
+PENDING_QUERY_INPUT_KEY = "pending_query_input"
 
 HistoryKind = Literal[
     "answered",
@@ -114,6 +117,7 @@ PERSIST_DIR, LLM, DOC_COUNT = _initialize_runtime()
 
 def render_question_panel() -> None:
     st.subheader("Question")
+    _apply_pending_query_input()
     query = st.text_input(
         "Your question",
         placeholder="e.g. What is the late-submission policy?",
@@ -280,7 +284,6 @@ def _store_submitted_question(
     )
     history: list[ChatHistoryEntry] = st.session_state["chat_history"]
     history.append(entry)
-    st.session_state["query_input"] = query
     return entry
 
 
@@ -363,6 +366,7 @@ def _repeat_history_query(query: str) -> None:
             llm=LLM,
             trace_store=st.session_state["trace_store"],
         )
+    st.session_state[PENDING_QUERY_INPUT_KEY] = query
     st.rerun()
 
 
@@ -370,6 +374,12 @@ def _truncate_history_query(query: str) -> str:
     if len(query) <= HISTORY_QUERY_PREVIEW_CHARS:
         return query
     return f"{query[:HISTORY_QUERY_PREVIEW_CHARS]}..."
+
+
+def _apply_pending_query_input() -> None:
+    pending_query = st.session_state.pop(PENDING_QUERY_INPUT_KEY, "")
+    if pending_query:
+        st.session_state["query_input"] = pending_query
 
 
 def _get_status_pill_style(kind: HistoryKind) -> tuple[str, str, str, str]:

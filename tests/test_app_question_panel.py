@@ -5,12 +5,20 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from streamlit.testing.v1 import AppTest
 
 import src.rag.retriever as retriever_module
 from src.app import streamlit_app
 from src.llm import CompletionResult
 from src.observability import LocalTraceStore
 from src.rag import Chunk, DocumentMetadata, build_vector_store
+
+_RENDER_QUESTION_PANEL_SCRIPT = """
+import streamlit as st
+from src.app import streamlit_app
+
+streamlit_app.render_question_panel()
+"""
 
 
 class FakeEmbeddings:
@@ -52,6 +60,19 @@ class SequenceLLM:
             {"prompt": prompt, "system": system, "kwargs": kwargs, "result": result}
         )
         return result
+
+
+def test_render_question_panel_applies_pending_repeat_query() -> None:
+    repeated_query = "What is the late submission policy?"
+    at = AppTest.from_string(_RENDER_QUESTION_PANEL_SCRIPT)
+    at.session_state["chat_history"] = []
+    at.session_state["trace_store"] = LocalTraceStore()
+    at.session_state[streamlit_app.PENDING_QUERY_INPUT_KEY] = repeated_query
+
+    at.run()
+
+    assert at.text_input[0].value == repeated_query
+    assert streamlit_app.PENDING_QUERY_INPUT_KEY not in at.session_state
 
 
 def test_submit_question_blocks_input_before_trace() -> None:

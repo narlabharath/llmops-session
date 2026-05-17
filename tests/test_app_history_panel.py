@@ -184,4 +184,4 @@ def test_render_history_panel_repeat_button_resubmits_query(
     assert submit_calls == [(repeated_query, fake_persist_dir, fake_llm, trace_store)]
     assert len(at.session_state["chat_history"]) == 2
     assert at.session_state["chat_history"][-1]["query"] == repeated_query
-    assert at.session_state["query_input"] == repeated_query
+    assert at.session_state[streamlit_app.PENDING_QUERY_INPUT_KEY] == repeated_query
