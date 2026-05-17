@@ -1,4 +1,8 @@
-"""Observability public API exports."""
+"""Public observability exports for traces, spans, stores, and metrics.
+
+This package is the pure-Python observability surface referenced by
+PLAN.md S-12 and used by the Batch 08 workflow demos.
+"""
 
 from __future__ import annotations
 

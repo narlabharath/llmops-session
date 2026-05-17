@@ -1,4 +1,8 @@
-"""Aggregate metrics helpers for observability traces."""
+"""Aggregate metrics helpers for observability traces.
+
+The functions here roll Batch 08 trace objects into the summary values
+called for by the PLAN.md S-12 observability contract.
+"""
 
 from __future__ import annotations
 

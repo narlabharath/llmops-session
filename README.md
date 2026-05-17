@@ -38,6 +38,9 @@ scripts/     setup_check, run_evals, run_guardrail_tests
 tests/       pytest coverage of config + datasets + guardrails
 ```
 
+`src/observability/` contains the local trace, span, trace-store, and
+session-metrics helpers used by the Batch 08 observability demos.
+
 ## License & data
 
 All program documents under `data/` are synthetic. No real participant data is used.

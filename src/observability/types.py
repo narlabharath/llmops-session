@@ -1,4 +1,8 @@
-"""Dataclass types for observability traces, spans, and session metrics."""
+"""Dataclass types shared across the observability package.
+
+These shapes mirror the PLAN.md S-12 contract for per-request traces,
+per-node spans, and aggregate session metrics.
+"""
 
 from __future__ import annotations
 

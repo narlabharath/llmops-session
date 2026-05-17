@@ -1,4 +1,8 @@
-"""Local in-memory trace storage helpers."""
+"""Trace construction and in-memory storage helpers.
+
+This module wraps workflow results into the PLAN.md S-12 trace shape
+without introducing external observability SDK dependencies.
+"""
 
 from __future__ import annotations
 
