@@ -1326,7 +1326,10 @@
     #section6 .result-preview pre {
       margin: 0;
       padding: 1.25rem;
-      color: #D4D4D4;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      color: #E8E8E8;
       font-size: 13px;
       line-height: 1.9;
       white-space: pre;
@@ -1432,7 +1435,10 @@
     #section7 .result-preview pre {
       margin: 0;
       padding: 1.25rem;
-      color: #D4D4D4;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      color: #E8E8E8;
       font-size: 13px;
       line-height: 1.9;
       white-space: pre;
@@ -1522,6 +1528,17 @@
     #section7 .sec-chip:hover { background: #EFF6FF; text-decoration: none; }
     @media (max-width: 768px) {
       #section7 .result-split { grid-template-columns: 1fr; }
+    }
+    /* S8 CSS scope — mobile-responsive side-by-side cold/grounded splits */
+    #section8 .s8-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      #section8 .s8-split { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -4303,120 +4320,162 @@ result.raw             = <span style="color:#808080">&lt;anthropic.Response …&
         A prompt is the only knob you have before the model. There are four levers — system message, few-shot examples, structured output, retrieved context — and each one stacks on the previous. This section walks them in order and ends with all four applied to one realistic participant question; §8 takes the last lever (grounding) and scales it from "one document pasted in" to "thousands retrieved automatically."
       </p>
 
-      <!-- 5. Prompt-anatomy diagram (Mermaid) — 5-layer stack -->
-      <figure class="mermaid-figure" style="max-width:100%">
-        <div class="mermaid" style="max-width:100%">
-graph TD
-    A["🔵 SYSTEM MESSAGE<br/>scope · tone · refusal rules"]:::sys
-    B["🟡 FEW-SHOT EXAMPLES<br/>optional — shapes consistency"]:::few
-    C["🟢 RETRIEVED CONTEXT<br/>optional — grounds the answer"]:::ctx
-    D["⬛ USER MESSAGE<br/>the actual question"]:::usr
-    E["🟣 OUTPUT SCHEMA<br/>optional — structures the response"]:::out
-
-    A --> B --> C --> D --> E
-
-    classDef sys  fill:#EFF6FF,stroke:#0078D4,stroke-width:2px,color:#1B1B1B
-    classDef few  fill:#FFF4CE,stroke:#F7630C,stroke-width:2px,color:#1B1B1B
-    classDef ctx  fill:#DFF6DD,stroke:#107C10,stroke-width:2px,color:#1B1B1B
-    classDef usr  fill:#2B2B2B,stroke:#888,stroke-width:2px,color:#F0F0F0
-    classDef out  fill:#F5F0FF,stroke:#8661C5,stroke-width:2px,color:#1B1B1B
+      <!-- 5. Prompt-anatomy diagram — 5-layer stacked panel (CSS, not flowchart) -->
+      <figure style="margin:1.5rem 0;max-width:680px;">
+        <div style="border:2px solid #D0D0D0;border-radius:8px;overflow:hidden;font-size:14px;line-height:1.5;">
+          <div style="background:#EFF6FF;border-bottom:1px solid #D0D0D0;padding:0.75rem 1.1rem;display:flex;align-items:center;gap:0.6rem;">
+            <span style="font-size:16px;">🔵</span>
+            <div><strong style="color:#0078D4;">SYSTEM MESSAGE</strong> <span style="color:#555;font-size:13px;">— scope, tone, refusal rules</span></div>
+          </div>
+          <div style="background:#FFF4CE;border-bottom:1px solid #D0D0D0;padding:0.75rem 1.1rem;display:flex;align-items:center;gap:0.6rem;">
+            <span style="font-size:16px;">🟡</span>
+            <div><strong style="color:#B85C00;">FEW-SHOT EXAMPLES</strong> <span style="color:#555;font-size:13px;">— optional · shapes consistency</span></div>
+          </div>
+          <div style="background:#DFF6DD;border-bottom:1px solid #D0D0D0;padding:0.75rem 1.1rem;display:flex;align-items:center;gap:0.6rem;">
+            <span style="font-size:16px;">🟢</span>
+            <div><strong style="color:#107C10;">RETRIEVED CONTEXT</strong> <span style="color:#555;font-size:13px;">— optional · grounds the answer</span></div>
+          </div>
+          <div style="background:#2B2B2B;border-bottom:1px solid #444;padding:0.75rem 1.1rem;display:flex;align-items:center;gap:0.6rem;">
+            <span style="font-size:16px;">⬛</span>
+            <div><strong style="color:#F0F0F0;">USER MESSAGE</strong> <span style="color:#AAA;font-size:13px;">— the actual question</span></div>
+          </div>
+          <div style="background:#F5F0FF;padding:0.75rem 1.1rem;display:flex;align-items:center;gap:0.6rem;">
+            <span style="font-size:16px;">🟣</span>
+            <div><strong style="color:#5C2D91;">OUTPUT SCHEMA</strong> <span style="color:#555;font-size:13px;">— optional · structures the response</span></div>
+          </div>
         </div>
-        <figcaption>Four optional layers around a required user message. Each layer has a specific job. Each one stacks.</figcaption>
+        <figcaption style="font-size:13px;color:var(--ink-soft);margin-top:0.5rem;font-style:italic;">Four optional sections around a required user message — all concatenated into one prompt. Each section has a specific job. Each one stacks.</figcaption>
       </figure>
 
-      <!-- 6. Lever 1 — System message ──────────────────────────────────── -->
-      <h3>Lever 1 — System message</h3>
-      <p style="font-size:15px;color:var(--text-secondary);margin-bottom:1rem;">
-        The system message sets the persona, scope, and tone for the entire conversation. Without one, the model answers as a general assistant. With one, it answers as <em>your</em> assistant — constrained, terse, or domain-specific, depending on what you need.
-      </p>
+      <!-- 6–11. Levers 1–5 (collapsible, consistent with/without pattern) -->
 
-      <!-- Side-by-side: without vs with system message (Design Decision 1) -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1.5rem 0;">
-        <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;padding:1rem;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;margin-bottom:.5rem;">Without system message</div>
-          <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">user_prompt = "Explain the operational risk
-         of letting an LLM call
-         production tools."
+      <!-- Lever 1 — System message -->
+      <details class="table-fold" open>
+        <summary>Lever 1 — System message · sets persona, scope and tone</summary>
+        <div style="padding:1rem 1.5rem;">
+          <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">
+            The system message sets the persona, scope, and tone for the entire conversation. Without one, the model answers as a general assistant. With one, it answers as <em>your</em> assistant — constrained, terse, or domain-specific.
+          </p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:0 0 0.75rem;">
+            <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;padding:1rem;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;margin-bottom:.5rem;">Without system message</div>
+              <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">user_prompt = "Explain the operational
+  risk of letting an LLM call
+  production tools."
 
 <span style="color:#888;"># → verbose 200-word reply with
 # markdown headers and caveats</span></pre>
-        </div>
-        <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;padding:1rem;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;margin-bottom:.5rem;">With system message</div>
-          <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">system = "You are a terse senior SRE.
-          Reply in one sentence and
-          use plain language."
+            </div>
+            <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;padding:1rem;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;margin-bottom:.5rem;">With system message</div>
+              <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">system = "You are a terse senior SRE.
+  Reply in one sentence and
+  use plain language."
 
 <span style="color:#888;"># → "Without strict human-in-the-loop
 # controls, an LLM calling production
 # tools can silently corrupt state,
 # exceed rate limits, or exfiltrate
 # data at machine speed."</span></pre>
+            </div>
+          </div>
+          <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin:0;">Same user prompt. Different system. Different program. See NB 01 cells 10–11.</p>
         </div>
-      </div>
-      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin-top:0.25rem;">Same user prompt. Different system. Different program. See NB 01 cells 10–11.</p>
+      </details>
 
-      <!-- 7. Lever 2 — Few-shot examples ──────────────────────────────── -->
-      <h3>Lever 2 — Few-shot examples</h3>
-      <p style="font-size:15px;color:var(--text-secondary);margin-bottom:1rem;">
-        Zero-shot relies entirely on the model's training. Few-shot shows the model exactly what <em>shape</em> you want — same format, same label vocabulary, same tone. For participant message classification, it's the difference between "schedule_question" reliably and a free-form paragraph sometimes.
-      </p>
-      <div class="example-box">
-        <pre style="font-size:13px;line-height:1.7;white-space:pre-wrap;">Classify each participant message into one of:
-  policy_question, schedule_question, assignment_question, out_of_scope.
-Reply with one label only.
+      <!-- Lever 2 — Few-shot examples -->
+      <details class="table-fold">
+        <summary>Lever 2 — Few-shot examples · shapes output format and consistency</summary>
+        <div style="padding:1rem 1.5rem;">
+          <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">
+            Zero-shot relies entirely on the model's training. Few-shot shows the model exactly what <em>shape</em> you want — same label vocabulary, same format, same tone. For participant message classification, it's the difference between a consistent single-token label and a free-form sentence.
+          </p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:0 0 0.75rem;">
+            <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;padding:1rem;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;margin-bottom:.5rem;">Without examples (zero-shot)</div>
+              <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">Classify this participant message
+into one of: policy_question,
+schedule_question, assignment_question,
+out_of_scope. Reply with one label.
 
-Message: 'When does the Thursday live session start?'
+Message: 'When is the deadline
+         for assignment 2?'
+
+<span style="color:#A4262C;"># → "This question is about assignment
+# 2's deadline — a schedule_question"
+# (verbose; can't split on whitespace)</span></pre>
+            </div>
+            <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;padding:1rem;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;margin-bottom:.5rem;">With two-shot examples</div>
+              <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">Message: 'When does the Thursday
+         live session start?'
 Label: schedule_question
 
-Message: 'Can you help me write my company's leave policy?'
+Message: 'Can you help me write
+         my company's leave policy?'
 Label: out_of_scope
 
-Message: 'When is the deadline for assignment 2?'
-Label: <span style="color:var(--ms-green);font-weight:700;">schedule_question</span>  ← model reliably picks one label</pre>
-      </div>
-      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin-top:0.5rem;">With examples the output reliably picks one of the four labels. Without them, the model may add commentary or use different terms. NB 01 cells 17–18 runs this against real Anthropic.</p>
-
-      <!-- 8. Lever 3 — Structured output (JSON) ───────────────────────── -->
-      <h3>Lever 3 — Structured output (JSON)</h3>
-      <p style="font-size:15px;color:var(--text-secondary);margin-bottom:1rem;">
-        The same classification prompt — extended with a JSON schema instruction — makes the output machine-parseable. Downstream code can read <code>result["category"]</code> directly instead of parsing a sentence. Add a <code>confidence</code> field and you have a triage signal too.
-      </p>
-      <div class="code-container">
-        <div class="code-header">
-          <span>NB 01 cell 20 — JSON output schema</span>
-          <button class="copy-button" onclick="copyCode(this)">Copy</button>
+Message: 'When is the deadline
+         for assignment 2?'
+<span style="color:#107C10;font-weight:700;">Label: schedule_question</span>
+<span style="color:#888;"># ← clean label, every time</span></pre>
+            </div>
+          </div>
+          <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin:0;">NB 01 cells 17–18 — zero-shot vs two-shot on the same question, run live against Anthropic.</p>
         </div>
-        <pre><code class="language-python">json_prompt = f"""You are the TalentSprint program assistant triage helper.
-Classify the participant message into exactly one of these labels:
-policy_question, schedule_question, assignment_question, out_of_scope.
+      </details>
 
-Participant message: '{message_to_classify}'
+      <!-- Lever 3 — Structured output (JSON) -->
+      <details class="table-fold">
+        <summary>Lever 3 — Structured output · makes the response machine-parseable</summary>
+        <div style="padding:1rem 1.5rem;">
+          <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">
+            Extending the prompt with a JSON schema instruction turns a free-form answer into a structured object. Downstream code reads <code>result["category"]</code> directly. Add a <code>confidence</code> field and you have a triage signal too.
+          </p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:0 0 0.75rem;">
+            <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;padding:1rem;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;margin-bottom:.5rem;">Without output schema</div>
+              <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">prompt = "Classify: 'When is the
+  deadline for assignment 2?'"
 
-Respond as strict JSON with this schema:
-{{"category": "&lt;one of the four&gt;", "confidence": 0.0, "reason": "&lt;one short sentence&gt;"}}
-Do not wrap the JSON in markdown fences.
-"""
+<span style="color:#A4262C;"># → "This appears to be a
+# schedule_question about assignment
+# deadlines."
+#
+# downstream code can't reliably
+# parse free-form prose</span></pre>
+            </div>
+            <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;padding:1rem;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;margin-bottom:.5rem;">With JSON schema instruction</div>
+              <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">prompt += """
+Respond as strict JSON:
+{"category": "&lt;one of the four&gt;",
+ "confidence": 0.0,
+ "reason": "&lt;one short sentence&gt;"}
+Do not wrap in markdown fences."""
 
-result = client.complete(json_prompt, cache=False, max_tokens=120)
-parsed = json.loads(result.text.strip())
-# → {"category": "schedule_question", "confidence": 0.95, "reason": "..."}</code></pre>
-      </div>
-      <aside class="callout callout-warning">
-        <strong>Caveat:</strong> structured output is <em>requested</em>, not guaranteed. Always parse with <code>try/except</code> and have a fallback — NB 01 cell 20 demonstrates both the clean parse and the fallback path. Some providers strip the JSON in markdown fences; the cell handles that too.
-      </aside>
+<span style="color:#107C10;"># → {"category": "schedule_question",
+#    "confidence": 0.95,
+#    "reason": "asking about due date"}</span></pre>
+            </div>
+          </div>
+          <aside class="callout callout-warning" style="margin:0.75rem 0 0;">
+            <strong>Caveat:</strong> structured output is <em>requested</em>, not guaranteed. Always parse with <code>try/except</code> and have a fallback. NB 01 cell 20 demonstrates both paths and strips markdown fences if the provider adds them.
+          </aside>
+        </div>
+      </details>
 
-      <!-- 9. Lever 4 — Retrieved context (bridge to RAG) ──────────────── -->
-      <h3>Lever 4 — Retrieved context (the bridge to RAG)</h3>
-      <p style="font-size:15px;color:var(--text-secondary);margin-bottom:1rem;">
-        Paste the relevant document into the prompt and the model answers from it — not from training data. One document, one question, a dramatically different answer. This is the grounding pattern. §8 scales it from "one doc pasted in" to automatic retrieval across hundreds.
-      </p>
-
-      <!-- Cold vs Grounded comparison (Design Decision 1) -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1.5rem 0;">
-        <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;padding:1rem;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;margin-bottom:.5rem;">Cold — no context</div>
-          <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">User: A participant asks: is there
+      <!-- Lever 4 — Retrieved context -->
+      <details class="table-fold">
+        <summary>Lever 4 — Retrieved context · grounds the answer to real documents</summary>
+        <div style="padding:1rem 1.5rem;">
+          <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">
+            Paste the relevant document into the prompt and the model answers from it — not from training data. One document, one question, a dramatically different answer. §8 scales this from "one doc pasted in" to automatic retrieval across hundreds.
+          </p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:0 0 0.75rem;">
+            <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;padding:1rem;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;margin-bottom:.5rem;">Cold — no context</div>
+              <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">User: A participant asks: is there
       a grace period for late
       submissions in this program?
 
@@ -4425,10 +4484,10 @@ Model: "Yes — most programs allow
        penalty."
 <span style="color:#A4262C;font-size:11px;">← invented; the policy explicitly
   forbids automatic grace periods.</span></pre>
-        </div>
-        <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;padding:1rem;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;margin-bottom:.5rem;">Grounded — policy doc pasted in</div>
-          <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">User: [policy document body]
+            </div>
+            <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;padding:1rem;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;margin-bottom:.5rem;">Grounded — policy doc pasted in</div>
+              <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">User: [policy document body]
       A participant asks: is there
       a grace period for late
       submissions in this program?
@@ -4438,86 +4497,108 @@ Model: "According to the program policy
        no automatic grace period. Late
        submissions require pre-approved
        extension requests."</pre>
-        </div>
-      </div>
-      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin-top:0.25rem;">Same model, same question — different answer because the second has the source of truth in scope. NB 01 cells 21–22 runs this live.</p>
-
-      <aside class="callout callout-info">
-        <strong>What §8 will add:</strong> in cells 21–22 we hand-picked the one document to paste in. In a real system we don't know which document has the answer — we might have hundreds, and the user's question might not match any single one cleanly. <strong>§8 (RAG) builds the retrieval layer that picks the right document(s) automatically — and shows what happens when it picks the wrong ones.</strong>
-      </aside>
-
-      <!-- 10. Lever 5 — Prompts are artifacts ─────────────────────────── -->
-      <h3>Lever 5 — Prompts are artifacts</h3>
-      <p style="font-size:15px;color:var(--text-secondary);margin-bottom:1rem;">
-        Once a prompt starts driving production behavior, it's a versioned artifact — not a print statement. The cache key includes <code>prompt_version</code>; bump it every time you make a semantic change, or you'll serve stale cached answers that hide your edit. The eval suite, observability dashboard, and CI gate all read this field.
-      </p>
-      <div class="code-container">
-        <div class="code-header">
-          <span>NB 01 cells 12–14 — prompt_version is the invalidation contract</span>
-          <button class="copy-button" onclick="copyCode(this)">Copy</button>
-        </div>
-        <pre><code class="language-python"># cache key = (prompt_text, prompt_version, model)
-client = LLMClient(cache=cache, prompt_version="v1")
-r1 = client.complete(prompt)   # miss → cached as v1
-r2 = client.complete(prompt)   # hit  ← same key
-
-# Bump prompt_version when the prompt changes semantically
-client_v2 = LLMClient(cache=cache, prompt_version="v2")
-r3 = client_v2.complete(prompt)  # fresh miss — different cache key
-print(events)  # ['miss', 'hit', 'miss']</code></pre>
-      </div>
-      <div style="margin-top:0.5rem;">
-        <span class="nb-chip">📓 NB 01 · cells 12–14</span>
-        <a class="sec-chip" href="#section9">→ §9 Caching (deep dive)</a>
-      </div>
-      <div class="mistake-box">
-        <strong>Mistake:</strong> treating prompts like print statements you edit casually. A prompt is code. Version it like code. The cache key, your evals, your observability, and your CI gates all depend on <code>prompt_version</code> being a discipline, not a magic string. §5 row 13 fails exactly this way; §9 has the deep dive.
-      </div>
-
-      <!-- 11. Expandable — Inline vs externalized prompt files ─────────── -->
-      <details class="table-fold">
-        <summary>📁 Practitioner depth — Inline prompts vs externalized prompt files</summary>
-        <div style="padding:1rem 1.5rem;background:#F8F8F8;">
-          <p style="font-style:italic;margin:0 0 1rem;"><strong>Scenario:</strong> You shipped the first prototype. The same classification prompt now lives in three places: the notebook, the workflow node, and a one-off script. A colleague edits one. How do you avoid drift?</p>
-          <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Approach</th>
-                  <th>Where it lives</th>
-                  <th>When to use</th>
-                  <th>Drift risk</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Inline f-string</strong></td>
-                  <td>At the call site, in the source file</td>
-                  <td>Teaching artifacts (notebooks); one-off scripts</td>
-                  <td><span class="chip chip-red">High</span> once reused</td>
-                </tr>
-                <tr>
-                  <td><strong><code>.md</code> template + <code>load_prompt(name, version)</code></strong></td>
-                  <td><code>src/llm/prompts/&lt;name&gt;.&lt;version&gt;.md</code></td>
-                  <td>Production code (<code>src/workflow/</code>, <code>src/rag/</code>, etc.)</td>
-                  <td><span class="chip chip-green">Low</span> — filename <em>is</em> the version</td>
-                </tr>
-                <tr>
-                  <td><strong>LangChain <code>PromptTemplate</code></strong></td>
-                  <td>Object instantiated in code or loaded from hub</td>
-                  <td>When already deep in LangChain</td>
-                  <td><span class="chip chip-orange">Medium</span> — version is a runtime attribute</td>
-                </tr>
-                <tr>
-                  <td><strong>YAML/JSON config + Jinja</strong></td>
-                  <td>Separate config tree</td>
-                  <td>Large prompt libraries with structured metadata</td>
-                  <td><span class="chip chip-green">Low</span> — but conceptual cost is high</td>
-                </tr>
-              </tbody>
-            </table>
+            </div>
           </div>
-          <p style="font-size:14px;font-style:italic;margin:0.75rem 0 0;color:var(--ink-soft);">In this course: notebooks keep prompts inline (you need to see them); <code>src/</code> uses <code>.md</code> files via <code>load_prompt()</code> (decision D-019). The pattern shows up in <code>src/workflow/nodes.py</code> — every node loads its prompt by name + version. Bumping <code>prompt_version</code> from <code>v1</code> to <code>v2</code> invalidates the cache for that prompt only.</p>
+          <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin:0 0 0.75rem;">Same model, same question — different answer because the second has the source of truth in scope. NB 01 cells 21–22 runs this live.</p>
+          <aside class="callout callout-info">
+            <strong>What §8 will add:</strong> in cells 21–22 we hand-picked the one document to paste in. In a real system we don't know which document has the answer — we might have hundreds. <strong>§8 (RAG) builds the retrieval layer that picks the right document(s) automatically — and shows what happens when it picks the wrong ones.</strong>
+          </aside>
+        </div>
+      </details>
+
+      <!-- Lever 5 — Prompts are artifacts -->
+      <details class="table-fold">
+        <summary>Lever 5 — Prompts are artifacts · version them like code</summary>
+        <div style="padding:1rem 1.5rem;">
+          <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">
+            Once a prompt drives production behavior, it's a versioned artifact. The cache key includes <code>prompt_version</code> — edit the prompt without bumping the version and you silently serve the old cached answer. The eval suite, observability dashboard, and CI gate all read this field.
+          </p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:0 0 0.75rem;">
+            <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;padding:1rem;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;margin-bottom:.5rem;">Without version bump</div>
+              <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">client = LLMClient(cache=cache,
+    prompt_version=<span style="color:#CE9178">"v1"</span>)
+r1 = client.complete(prompt)
+<span style="color:#888;"># miss → cached as v1</span>
+
+<span style="color:#888;"># you edit the prompt text but
+# forget to change the version</span>
+client_edit = LLMClient(cache=cache,
+    prompt_version=<span style="color:#CE9178">"v1"</span>)  <span style="color:#A4262C;"># ← same!</span>
+r2 = client_edit.complete(prompt)
+<span style="color:#A4262C;"># hit ← stale v1 answer served
+# events: ['miss', 'hit']</span></pre>
+            </div>
+            <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;padding:1rem;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;margin-bottom:.5rem;">With version bump</div>
+              <pre style="margin:0;font-size:13px;white-space:pre-wrap;line-height:1.6;">client = LLMClient(cache=cache,
+    prompt_version=<span style="color:#CE9178">"v1"</span>)
+r1 = client.complete(prompt)
+<span style="color:#888;"># miss → cached as v1</span>
+
+<span style="color:#888;"># prompt changed semantically
+# → bump the version</span>
+client_v2 = LLMClient(cache=cache,
+    prompt_version=<span style="color:#CE9178">"v2"</span>)  <span style="color:#107C10;">← bumped</span>
+r3 = client_v2.complete(prompt)
+<span style="color:#107C10;"># miss ← fresh call, new answer
+# events: ['miss', 'hit', 'miss']</span></pre>
+            </div>
+          </div>
+          <div style="margin:0 0 0.75rem;">
+            <span class="nb-chip">📓 NB 01 · cells 12–14</span>
+            <a class="sec-chip" href="#section9">→ §9 Caching (deep dive)</a>
+          </div>
+          <div class="mistake-box">
+            <strong>Mistake:</strong> treating prompts like print statements you edit casually. A prompt is code. Version it like code. The cache key, your evals, your observability, and your CI gates all depend on <code>prompt_version</code> being a discipline, not a magic string. §5 row 13 fails exactly this way; §9 has the deep dive.
+          </div>
+
+          <!-- Nested expandable — inline vs externalized -->
+          <details class="table-fold" style="margin-top:1rem;">
+            <summary>📁 Practitioner depth — Inline prompts vs externalized prompt files</summary>
+            <div style="padding:1rem 1.5rem;background:#F8F8F8;">
+              <p style="font-style:italic;margin:0 0 1rem;"><strong>Scenario:</strong> You shipped the first prototype. The same classification prompt now lives in three places: the notebook, the workflow node, and a one-off script. A colleague edits one. How do you avoid drift?</p>
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Approach</th>
+                      <th>Where it lives</th>
+                      <th>When to use</th>
+                      <th>Drift risk</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Inline f-string</strong></td>
+                      <td>At the call site, in the source file</td>
+                      <td>Teaching artifacts (notebooks); one-off scripts</td>
+                      <td><span class="chip chip-red">High</span> once reused</td>
+                    </tr>
+                    <tr>
+                      <td><strong><code>.md</code> template + <code>load_prompt(name, version)</code></strong></td>
+                      <td><code>src/llm/prompts/&lt;name&gt;.&lt;version&gt;.md</code></td>
+                      <td>Production code (<code>src/workflow/</code>, <code>src/rag/</code>, etc.)</td>
+                      <td><span class="chip chip-green">Low</span> — filename <em>is</em> the version</td>
+                    </tr>
+                    <tr>
+                      <td><strong>LangChain <code>PromptTemplate</code></strong></td>
+                      <td>Object instantiated in code or loaded from hub</td>
+                      <td>When already deep in LangChain</td>
+                      <td><span class="chip chip-orange">Medium</span> — version is a runtime attribute</td>
+                    </tr>
+                    <tr>
+                      <td><strong>YAML/JSON config + Jinja</strong></td>
+                      <td>Separate config tree</td>
+                      <td>Large prompt libraries with structured metadata</td>
+                      <td><span class="chip chip-green">Low</span> — but conceptual cost is high</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p style="font-size:14px;font-style:italic;margin:0.75rem 0 0;color:var(--ink-soft);">In this course: notebooks keep prompts inline (you need to see them); <code>src/</code> uses <code>.md</code> files via <code>load_prompt()</code> (decision D-019). The pattern shows up in <code>src/workflow/nodes.py</code> — every node loads its prompt by name + version. Bumping <code>prompt_version</code> from <code>v1</code> to <code>v2</code> invalidates the cache for that prompt only.</p>
+            </div>
+          </details>
         </div>
       </details>
 
@@ -4529,27 +4610,27 @@ print(events)  # ['miss', 'hit', 'miss']</code></pre>
         <!-- Left: dark-theme setup preview -->
         <div class="result-preview">
           <div class="code-header"><span>Cell 25 — setup (NB 01)</span></div>
-          <pre>participant_question = <span style="color:#CE9178">"A participant asks: can I get
+          <pre><span style="color:#9CDCFE">participant_question</span> = <span style="color:#F1956A">"A participant asks: can I get
   extra time on assignment 2 if I'm sick?"</span>
 
-system_msg = <span style="color:#CE9178">"You are the TalentSprint program
+<span style="color:#9CDCFE">system_msg</span> = <span style="color:#F1956A">"You are the TalentSprint program
   assistant. Answer only using the program
   documents provided. If the documents
   don't contain the answer, say so
   explicitly. Cite the source section."</span>
 
-policy_text = policy_path.read_text(...)
+<span style="color:#9CDCFE">policy_text</span> = <span style="color:#9CDCFE">policy_path</span>.<span style="color:#DCDCAA">read_text</span>(...)
 
-user_prompt = grounding_context
-            + question
-            + output_schema_request
+<span style="color:#9CDCFE">user_prompt</span> = <span style="color:#9CDCFE">grounding_context</span>
+            + <span style="color:#9CDCFE">question</span>
+            + <span style="color:#9CDCFE">output_schema_request</span>
 
-client = LLMClient(
-    cache=cache,
-    prompt_version=<span style="color:#CE9178">"program_assistant_v1"</span>
+<span style="color:#9CDCFE">client</span> = <span style="color:#DCDCAA">LLMClient</span>(
+    cache=<span style="color:#9CDCFE">cache</span>,
+    prompt_version=<span style="color:#F1956A">"program_assistant_v1"</span>
 )
-result = client.complete(
-    user_prompt, system=system_msg)</pre>
+<span style="color:#9CDCFE">result</span> = <span style="color:#9CDCFE">client</span>.<span style="color:#DCDCAA">complete</span>(
+    <span style="color:#9CDCFE">user_prompt</span>, system=<span style="color:#9CDCFE">system_msg</span>)</pre>
         </div>
 
         <!-- Right: annotated output fields -->
@@ -4617,6 +4698,379 @@ result = client.complete(
 
     </section>
     <!-- End Section 7 (LH-21) -->
+
+    <!-- ==================================================================
+         Section 8 — RAG: From Capability to Grounded Behavior  (LH-22)
+         Part 3 · Prototype · NB 02 cells 4–28
+         ================================================================== -->
+    <section id="section8" class="section" aria-labelledby="section8-title">
+
+      <!-- 1. section-meta -->
+      <div class="section-meta">
+        <span class="progress-indicator">Section 8 of 16 · Part 3 — Prototype</span>
+      </div>
+
+      <!-- 2. opening-hook — verbatim from PLAN.md -->
+      <div class="opening-hook">
+        Your model is fluent and confident. It's also confidently wrong about your specific rules. How do you fix this without retraining?
+      </div>
+
+      <!-- 3. h2 — verbatim from PLAN.md -->
+      <h2 id="section8-title">RAG — From Capability to Grounded Behavior</h2>
+
+      <!-- 4. Intro paragraph — verbatim from PLAN.md -->
+      <p class="intro">
+        §7's Lever 4 hand-pasted one document into the prompt. That doesn't scale: real systems have hundreds of documents and the user's question rarely names them. Retrieval-Augmented Generation makes the document-picking step part of the pipeline — and surfaces a new class of failure modes that don't exist until you build it. This section walks the ingestion + retrieval mechanics, then walks five failures NB 02 demonstrates against the program-policy corpus.
+      </p>
+
+      <!-- 5. Hero RAG-pipeline Mermaid diagram — verbatim ASCII from PLAN.md rendered as flowchart TB -->
+      <figure style="margin:1.5rem 0;max-width:900px;">
+        <div class="diagram diagram-large">
+          <div class="mermaid">
+flowchart TB
+    subgraph ingest["Ingest — runs once per corpus version"]
+        direction LR
+        docs["Documents<br/>(.md / .pdf)"] --> chunk["Chunk<br/>(size N)"] --> emb1["Embed<br/>(model M)"] --> vs[("Vector store<br/>(Chroma)")]
+    end
+    subgraph query["Retrieve + Generate — per question"]
+        direction LR
+        q["Query"] --> emb2["Embed<br/>(same M)"] --> sim["Similarity<br/>+ re-rank"] --> rc["Retrieved<br/>chunks"] --> pr["Prompt =<br/>system + chunks + Q"] --> llm["LLM"]
+    end
+    vs -->|"persisted index"| sim
+          </div>
+        </div>
+        <figcaption style="font-size:13px;color:var(--ink-soft);margin-top:0.5rem;font-style:italic;">Two halves. Ingestion (top) runs once per corpus version. Retrieval + generation (bottom) runs once per question. The <code>same M</code> embedding model on both halves is non-negotiable — change one, you must re-ingest.</figcaption>
+      </figure>
+
+      <!-- 6. h3 Ingest the corpus + code excerpt NB 02 cell 4 -->
+      <h3>Ingest the corpus</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">One call loads the five sample policy documents, splits them into fixed-size chunks, embeds each chunk, and persists the vector store to disk. Four knobs control everything.</p>
+      <div class="code-container">
+        <div class="code-header"><span>NB 02 · cell 4</span></div>
+        <pre><code class="language-python">corpus_dir  = repo_root / "data"
+persist_dir = repo_root / "data" / "chroma_nb02"
+
+result = ingest(
+    corpus_dir=corpus_dir,
+    persist_dir=persist_dir,
+    chunk_size=500,
+    chunk_overlap=50,
+)
+print(f"documents_loaded : {result.documents_loaded}")
+print(f"chunks_created   : {result.chunks_created}")
+print(f"embedding_model  : {result.embedding_model}")
+# 5 docs · 23 chunks · all-MiniLM-L6-v2 · persisted to disk</code></pre>
+      </div>
+      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);">One call. Four knobs (corpus, persist, chunk size, overlap). NB 02 cell 4 runs this against the 5 sample policy docs. Re-run with a different <code>chunk_size</code> and the whole vector store is different — see Failure 4b.</p>
+
+      <!-- 7. h3 Baseline retrieval + code NB 02 cells 6–7 + callout-info -->
+      <h3>Baseline retrieval</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">With the store persisted, retrieval is one call. Each result is a <code>RetrievedDocument</code> carrying the chunk text, its document identity, an authority rank, and a similarity score.</p>
+      <div class="code-container">
+        <div class="code-header"><span>NB 02 · cells 6–7</span></div>
+        <pre><code class="language-python">from src.rag import retrieve
+
+hits = retrieve(persist_dir, "What is the late submission policy?", k=5)
+for i, doc in enumerate(hits, 1):
+    print(f"Hit {i}")
+    print(f"  document_id     : {doc.chunk.metadata.document_id}")
+    print(f"  source_priority : {doc.chunk.metadata.source_priority}")
+    print(f"  score           : {doc.score:.4f}")
+    print(f"  text (first 200): {doc.chunk.text[:200]!r}")</code></pre>
+      </div>
+      <aside class="callout callout-info">
+        <strong>What <code>RetrievedDocument</code> carries:</strong> the chunk text, its <code>document_id</code>, a numeric <code>source_priority</code> (lower = more authoritative), and a similarity <code>score</code>. The priority field is metadata the corpus author sets on each doc — it is what Failure 2's fix relies on.
+      </aside>
+
+      <!-- 8. h3 Failure 1 — Parametric knowledge is not your policy -->
+      <h3>Failure 1 — Parametric knowledge is not your policy</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">Ask the model about a common rule without any context and it draws from training data averages — fluently, confidently, and specifically wrong. Passing the retrieved chunk replaces the guess with a citation.</p>
+
+      <div class="s8-split">
+        <!-- Cell 9 — ungrounded -->
+        <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;overflow:hidden;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;padding:0.6rem 1rem;border-bottom:1px solid #FFC9C9;">NB 02 · cell 9 — Ungrounded (parametric only)</div>
+          <pre style="margin:0;padding:1rem;font-size:13px;white-space:pre-wrap;line-height:1.6;background:#FFF5F5;">QUESTION = (
+    "In a typical online AI engineering "
+    "certification program, what is the "
+    "standard minimum % of live sessions "
+    "a participant must attend?"
+)
+client = LLMClient()
+result = client.complete(prompt=QUESTION, cache=False)
+print(result.text)
+<span style="color:#A4262C;"># → "Typically 75% — most programs accept
+#    70–80%; check your handbook."
+#    ← invented; this program's rule is 80%</span></pre>
+        </div>
+        <!-- Cell 10 — grounded -->
+        <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;overflow:hidden;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;padding:0.6rem 1rem;border-bottom:1px solid #9FD89F;">NB 02 · cell 10 — Grounded (retrieved chunk)</div>
+          <pre style="margin:0;padding:1rem;font-size:13px;white-space:pre-wrap;line-height:1.6;background:#F3FBF3;">grounded_hits = retrieve(
+    persist_dir,
+    "minimum attendance percentage live sessions",
+    k=3
+)
+context = "\n\n".join(
+    f"[{d.chunk.metadata.document_id}]\n{d.chunk.text}"
+    for d in grounded_hits
+)
+prompt = f"Use only:\n{context}\n\nQuestion: {QUESTION}"
+result = client.complete(prompt=prompt)
+print(result.text)
+<span style="color:#107C10;"># → "80% of live sessions, tracked automatically."
+#    ← matches the policy doc exactly</span></pre>
+        </div>
+      </div>
+      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);">Same model. Forcing a single number with "most common" draws on parametric averages; passing the retrieved chunk replaces guess with citation.</p>
+
+      <!-- 9. h3 Failure 2 — Wrong doc on top -->
+      <h3>Failure 2 — Wrong doc on top</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">Raw similarity retrieval picks whatever text is closest to the query — not whatever source is most authoritative. For a deadline question, the <em>assignment guidelines</em> doc (<code>source_priority=2</code>) is lexically closer than the <em>program policy</em> (<code>source_priority=1</code>), so it ranks first. Cell 13 shows the failure; cell 14 shows the fix.</p>
+      <div class="code-container">
+        <div class="code-header"><span>NB 02 · cell 13 — raw similarity: wrong doc on top</span></div>
+        <pre><code class="language-python">BAD_QUERY = "when is assignment 2 due"
+bad_hits = retrieve(persist_dir, BAD_QUERY, k=3)
+for rank, doc in enumerate(bad_hits, 1):
+    print(f"#{rank}  {doc.chunk.metadata.document_id!r:28s}"
+          f"  source_priority={doc.chunk.metadata.source_priority}"
+          f"  score={doc.score:.4f}")
+# ⚠  Top result has source_priority=2 (assignment_guidelines ranks above
+#    program_policy source_priority=1 for a deadline question)</code></pre>
+      </div>
+      <div class="code-container">
+        <div class="code-header"><span>NB 02 · cell 14 — fix: over-fetch + re-rank by source_priority</span></div>
+        <pre><code class="language-python">wide_hits = retrieve(persist_dir, BAD_QUERY, k=10)
+reranked  = sorted(wide_hits, key=lambda d: d.chunk.metadata.source_priority)
+top3      = reranked[:3]
+for rank, doc in enumerate(top3, 1):
+    print(f"#{rank}  {doc.chunk.metadata.document_id!r:28s}"
+          f"  source_priority={doc.chunk.metadata.source_priority}"
+          f"  score={doc.score:.4f}")
+# ✓  Policy doc (source_priority=1) is now #1 after re-ranking</code></pre>
+      </div>
+      <div class="mistake-box">
+        <strong>The mistake:</strong> trusting cosine similarity alone. Embedding similarity ranks by lexical/semantic closeness, not by authority. Two-stage retrieval — over-fetch then re-rank by a metadata field you control — is the cheapest fix.
+      </div>
+
+      <!-- 10. h3 Failure 3 — Missing context -->
+      <h3>Failure 3 — Missing context</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">Ask the corpus a question it has no answer for and the retriever returns its closest neighbors anyway. A score threshold detects the obvious miss; a canned refusal replaces the LLM call so the model never hallucinates a confident wrong answer.</p>
+      <div class="code-container">
+        <div class="code-header"><span>NB 02 · cell 17 — out-of-corpus query; observe low max score</span></div>
+        <pre><code class="language-python">MISSING_QUERY = "What is the recipe for chocolate chip cookies?"
+missing_hits  = retrieve(persist_dir, MISSING_QUERY, k=3)
+max_score     = max(d.score for d in missing_hits)
+print(f"Max similarity score: {max_score:.4f}")
+# → Max similarity score: ≈ 0.88
+#   Compare to in-domain queries (≈ 0.99): noticeably lower.
+#   A threshold of 0.93 would trigger refusal for this corpus.</code></pre>
+      </div>
+      <div class="code-container">
+        <div class="code-header"><span>NB 02 · cell 18 — refusal helper: canned response below threshold</span></div>
+        <pre><code class="language-python">CORPUS_THRESHOLD = 0.93  # in-domain ≈ 0.97–0.99; out-of-domain ≈ 0.70–0.90
+
+def grounded_answer_or_refuse(query, k=3, min_score=CORPUS_THRESHOLD):
+    docs = retrieve(persist_dir, query, k=k)
+    if not docs or max(d.score for d in docs) &lt; min_score:
+        return (
+            "I don't see information about that in the program documents. "
+            "Please contact the program team."
+        )
+    context = "\n\n".join(
+        f"[{d.chunk.metadata.document_id}]\n{d.chunk.text}" for d in docs
+    )
+    return LLMClient(provider="mock").complete(
+        f"Answer using only:\n{context}\n\nQuestion: {query}"
+    ).text
+
+print(grounded_answer_or_refuse(MISSING_QUERY))
+# → "I don't see information about that in the program documents."</code></pre>
+      </div>
+      <aside class="callout callout-warning">
+        <strong>Score thresholds are a noisy signal.</strong> They catch the obvious-miss case but fail on confidently-wrong neighbors. §11 layers structured refusal <em>on top of</em> retrieval thresholds; together they catch what either misses alone.
+      </aside>
+
+      <!-- 11. h3 Failure 4a — Conflicting sources -->
+      <h3>Failure 4a — Conflicting sources</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">When a query retrieves chunks from two documents that disagree, the model sees both answers and may blend them, hedge, or pick one arbitrarily. Keeping only chunks from the single most-authoritative source makes the answer deterministic.</p>
+      <div class="code-container">
+        <div class="code-header"><span>NB 02 · cell 20 — conflicting sources surface for the same query</span></div>
+        <pre><code class="language-python"># Both program_policy (priority=1) and sample_faq (priority=5) address
+# recording retention — and they disagree on the retention window.
+CONFLICT_QUERY = "how long are session recordings kept"
+hits = retrieve(persist_dir, CONFLICT_QUERY, k=5)
+for i, doc in enumerate(hits, 1):
+    print(f"Hit {i}  |  {doc.chunk.metadata.document_id:&lt;30}"
+          f"  |  priority={doc.chunk.metadata.source_priority}"
+          f"  |  score={doc.score:.4f}")</code></pre>
+      </div>
+      <div class="code-container">
+        <div class="code-header"><span>NB 02 · cell 21 — priority-based resolution: keep only most-authoritative source</span></div>
+        <pre><code class="language-python"># Keep only chunks from the single lowest source_priority value.
+# The policy doc always wins; FAQ chunks are dropped silently.
+min_priority  = min(doc.chunk.metadata.source_priority for doc in hits)
+authoritative = [doc for doc in hits
+                 if doc.chunk.metadata.source_priority == min_priority]
+for i, doc in enumerate(authoritative, 1):
+    print(f"Hit {i}  |  {doc.chunk.metadata.document_id:&lt;30}"
+          f"  |  priority={min_priority}")
+# ✓  Only program_policy chunks remain</code></pre>
+      </div>
+
+      <!-- 12. h3 Failure 4b — Chunk size matters -->
+      <h3>Failure 4b — Chunk size matters</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">The same corpus ingested at different chunk sizes produces different retrievers. NB 02 cell 23 re-ingests at <code>chunk_size=100</code> and <code>chunk_size=2000</code> to show how both extremes degrade quality compared to the default <code>500</code>.</p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th><code>chunk_size</code></th>
+              <th>What you get</th>
+              <th>Why it fails</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>100</strong> (too narrow)</td>
+              <td>Fragments of one sentence each</td>
+              <td>Loses surrounding context; model can't reason about clauses</td>
+            </tr>
+            <tr>
+              <td><strong>500</strong> (default)</td>
+              <td>Coherent paragraph-sized chunks</td>
+              <td>Balanced; works for this corpus</td>
+            </tr>
+            <tr>
+              <td><strong>2000</strong> (too broad)</td>
+              <td>Whole-doc-sized chunks</td>
+              <td>Retrieval becomes coarse; the same chunk wins every question</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="code-container">
+        <div class="code-header"><span>NB 02 · cell 23 — re-ingest at extreme chunk sizes; observe degradation</span></div>
+        <pre><code class="language-python">CHUNK_QUERY = "What happens to assignments submitted after the deadline?"
+
+# Re-ingest at extreme sizes (temp dirs; cleaned up at end of cell)
+ingest(corpus_dir=corpus_dir, persist_dir=tmp_large, chunk_size=2000, chunk_overlap=200)
+ingest(corpus_dir=corpus_dir, persist_dir=tmp_small, chunk_size=100,  chunk_overlap=10)
+
+for label, store in [("2000 (too broad)", tmp_large), ("100 (too narrow)", tmp_small)]:
+    hits = retrieve(store, CHUNK_QUERY, k=3)
+    print(f"\nchunk_size={label}")
+    for i, doc in enumerate(hits, 1):
+        chars = len(doc.chunk.text)
+        print(f"  Hit {i} | {doc.chunk.metadata.document_id:&lt;26} | score={doc.score:.4f} | {chars} chars")</code></pre>
+      </div>
+      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);">Tuning is unavoidable. There is no universal chunk size — it is a function of your corpus, your typical question length, and your retrieval <code>k</code>. NB 02 cell 24 calls this out explicitly.</p>
+
+      <!-- 13. h3 Failure 5 — Stale ingestion -->
+      <h3>Failure 5 — Stale ingestion</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">The vector store is a snapshot of the corpus at ingest time. Edit a policy document and the retriever returns the old text until you re-ingest. NB 02 cell 26 edits the late-submission penalty, queries the old store, then re-ingests and re-queries.</p>
+      <div class="code-container">
+        <div class="code-header"><span>NB 02 · cell 26 — stale ingestion: old penalty returned until re-ingest</span></div>
+        <pre><code class="language-python">STALE_QUERY = "What happens to late submissions?"
+
+# Query the OLD vector store (v1 policy — 48-hour no-penalty window)
+hit_old = retrieve(persist_dir, STALE_QUERY, k=1)[0]
+print("=== OLD INGESTION (v1 policy) ===")
+print(hit_old.chunk.text[:300])
+
+# After editing sample_program_policy.md to add a 5-point/day penalty (2026-Q3)
+# and re-ingesting to a new persist dir:
+hit_new = retrieve(persist_stale_new, STALE_QUERY, k=1)[0]
+print("\n=== NEW INGESTION (v2 policy — 5-point/day penalty) ===")
+print(hit_new.chunk.text[:300])
+# The 2026-Q3 update is invisible until re-ingestion completes.</code></pre>
+      </div>
+      <aside class="callout callout-critical">
+        <strong>The data analogue of stale cache.</strong> §9 row 13 in S-5 talks about stale <em>cached LLM responses</em>. This is the layer below: stale <em>retrieved documents</em>. Both need an invalidation contract — <code>prompt_version</code> for cache, re-ingestion discipline (CI-triggered on doc-dir change) for the vector store.
+      </aside>
+
+      <!-- 14. takeaway-box before expandable — verbatim from PLAN.md -->
+      <div class="takeaway-box">
+        <div class="icon">💡</div>
+        <div style="overflow:hidden;">
+          <p><strong>The five failures are the deliverable.</strong> RAG is not "add a vector store and you're done." Each failure mode in this section has a different mitigation, a different operational owner, and a different observability signal. §10 (Evaluation) will measure that the mitigations actually hold; §11 (Guardrails) will catch what they miss; §12 (Observability) will surface which one fired.</p>
+        </div>
+      </div>
+
+      <!-- 15. Expandable practitioner depth — chunking strategy decision matrix -->
+      <details class="table-fold">
+        <summary>📁 Practitioner depth — Chunking strategy: fixed vs semantic vs hierarchical</summary>
+        <div style="padding:1rem 1.5rem;background:#F8F8F8;">
+          <p style="font-style:italic;margin:0 0 1rem;"><strong>Scenario:</strong> Your first ingest used fixed-size chunking because it's one line of code. The policy doc has 7 numbered sections; the FAQ has 40 Q&amp;A pairs; the schedule is a markdown table. They all got the same 500-char chunks. Failure 2 and Failure 4a both got worse for it. Which strategy do you reach for next?</p>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Strategy</th>
+                  <th>How it splits</th>
+                  <th>Precision</th>
+                  <th>Recall</th>
+                  <th>Setup cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Fixed-size</strong> (current)</td>
+                  <td>N chars or N tokens, fixed overlap</td>
+                  <td>Low–medium</td>
+                  <td>Medium</td>
+                  <td>One parameter</td>
+                </tr>
+                <tr>
+                  <td><strong>Semantic</strong></td>
+                  <td>Split on embedding-similarity boundaries</td>
+                  <td>Medium–high</td>
+                  <td>Medium</td>
+                  <td>Embedding pass per doc</td>
+                </tr>
+                <tr>
+                  <td><strong>Hierarchical</strong></td>
+                  <td>Document → section → paragraph; retrieve at finest, surface up</td>
+                  <td>High</td>
+                  <td>High</td>
+                  <td>Doc-aware parser per type</td>
+                </tr>
+                <tr>
+                  <td><strong>Structure-aware</strong> (markdown / HTML / code)</td>
+                  <td>Split on <code>#</code> headings, <code>&lt;section&gt;</code>, function defs</td>
+                  <td>High (per type)</td>
+                  <td>High (per type)</td>
+                  <td>One parser per format</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:14px;font-style:italic;margin:0.75rem 0 0;color:var(--ink-soft);">This course uses fixed-size at chunk_size=500 because it lets us teach the failure modes cleanly. Production systems on heterogeneous corpora almost always end up at structure-aware + hierarchical — see the LangChain <code>RecursiveCharacterTextSplitter</code> and <code>MarkdownHeaderTextSplitter</code> for ready-made starting points.</p>
+        </div>
+      </details>
+
+      <!-- 16. notebook-pointer block — verbatim from PLAN.md render order item 16 -->
+      <div class="notebook-pointer">
+        <strong>Live demo:</strong> open <code>notebooks/02_rag_pipeline.ipynb</code> and run cells 2–28 (29 cells total).
+        <br/><br/>
+        Cells 2–4 ingest the corpus. Cells 6–7 baseline retrieval. Cells 9–11 demonstrate Failure 1 (parametric vs grounded). Cells 13–15 demonstrate Failure 2 (wrong doc on top, fixed by <code>source_priority</code> re-rank). Cells 17–18 demonstrate Failure 3 (missing context refusal). Cells 20–21 demonstrate Failure 4a (conflicting sources resolved by priority). Cells 23–24 demonstrate Failure 4b (chunk-size sensitivity). Cells 26–27 demonstrate Failure 5 (stale ingestion). Cell 28 is the closing recap — the same realistic question NB 01 cell 24 answered with one hand-pasted doc, now answered with full retrieval.
+      </div>
+
+      <!-- 17. takeaway-box (closing) — verbatim from PLAN.md -->
+      <div class="takeaway-box">
+        <div class="icon">💡</div>
+        <div style="overflow:hidden;">
+          <p><strong>The lesson:</strong> RAG converts "the model doesn't know" into "the pipeline can be wrong" — a much better problem to have, because pipelines have levers. Five levers in this section (chunk size, similarity + re-rank, score thresholds, priority-based resolution, re-ingestion). §9 adds a sixth: routing the question to the right pipeline in the first place.</p>
+        </div>
+      </div>
+
+      <!-- 18. Cross-references footer line — verbatim from PLAN.md -->
+      <p style="font-size:13px;color:var(--ink-soft);border-top:1px solid var(--border-color);padding-top:0.75rem;margin-top:1.5rem;">
+        See also: <a href="#section5">§5</a> rows 1/2/3/5/9 (the failure modes this section demonstrates) · <a href="#section7">§7</a> Lever 4 (the one-document preview this section scales) · <a href="#section9">§9</a> (workflow chooses <em>which</em> pipeline runs) · <a href="#section10">§10</a> (evals measure these mitigations against the golden set) · <a href="#section11">§11</a> (guardrails layer refusal on top of score thresholds) · <a href="#section12">§12</a> (<code>retrieved_doc_ids</code> becomes a trace field).
+      </p>
+
+    </section>
+    <!-- End Section 8 (LH-22) -->
 
   </main>
 
