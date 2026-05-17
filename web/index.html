@@ -5071,7 +5071,7 @@ flowchart LR
       </div>
 
       <!-- 12. Failure 4b — Chunk size matters -->
-      <div class="expandable open" id="s8-f4b">
+      <div class="expandable" id="s8-f4b">
         <div class="expandable-header" style="background:var(--ms-blue);" data-persona="s8-f4b">
           <span>🔴 &nbsp; Failure 4b — <strong>Chunk size matters</strong> &nbsp; <span style="font-weight:400;font-size:12px;opacity:0.85;">chunk size controls retrieval precision</span></span>
           <span class="expandable-icon">▼</span>
@@ -5151,6 +5151,70 @@ flowchart LR
       </aside>
         </div>
       </div>
+
+      <!-- 14. takeaway-box before expandable — verbatim from PLAN.md -->
+      <!-- Synthesis arc: all five fixes, one call -->
+      <h3 style="margin-top:2.5rem;">All five fixes, one retrieval call</h3>
+      <p style="font-size:15px;color:var(--text-secondary);margin-bottom:1rem;">NB 02 cells 9–27 apply every fix above. Each parameter directly mitigates one of the five failures.</p>
+      <div class="result-split">
+        <div class="result-preview">
+          <div class="code-header"><span>NB 02 — hardened retrieve()</span></div>
+          <pre><span style="color:#9CDCFE">results</span> = <span style="color:#9CDCFE">rag</span>.<span style="color:#DCDCAA">retrieve</span>(
+    <span style="color:#9CDCFE">query</span>,
+    k=<span style="color:#B5CEA8">10</span>,              <span style="color:#6A9955"># over-fetch for re-rank</span>
+    threshold=<span style="color:#B5CEA8">0.93</span>,    <span style="color:#6A9955"># reject irrelevant results</span>
+)
+
+<span style="color:#6A9955"># authority beats similarity score</span>
+<span style="color:#9CDCFE">results</span> = <span style="color:#DCDCAA">sorted</span>(
+    <span style="color:#9CDCFE">results</span>,
+    key=<span style="color:#C586C0">lambda</span> <span style="color:#9CDCFE">d</span>: <span style="color:#9CDCFE">d</span>.source_priority
+)[:<span style="color:#B5CEA8">3</span>]
+
+<span style="color:#6A9955"># chunk_size=500 fixed at ingest</span>
+<span style="color:#6A9955"># CI triggers re-ingest on doc change</span></pre>
+        </div>
+        <div class="result-fields">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:.4rem;">What each line fixes</div>
+          <div class="field-row" style="border-left:3px solid var(--ms-blue);">
+            <div class="field-name" style="color:var(--ms-blue);">chunks in prompt</div>
+            <div class="field-info">Fix for Failure 1 — replaces training-data guesses with your actual documents
+              <small>The entire RAG pipeline is the mitigation for parametric memory</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-green);">
+            <div class="field-name" style="color:var(--ms-green);">k=10, then [:3]</div>
+            <div class="field-info">Fix for Failure 2 — over-fetch then re-rank; authority beats similarity
+              <small>source_priority=1 lands on top regardless of cosine score</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-orange);">
+            <div class="field-name" style="color:var(--ms-orange);">threshold=0.93</div>
+            <div class="field-info">Fix for Failure 3 — rejects out-of-corpus questions before LLM call
+              <small>Returns a canned refusal; hallucination impossible</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-purple);">
+            <div class="field-name" style="color:var(--ms-purple);">source_priority sort</div>
+            <div class="field-info">Fix for Failure 4a — one source wins; conflicting docs dropped silently
+              <small>Deterministic answer regardless of similarity order</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid #0097B2;">
+            <div class="field-name" style="color:#0097B2;">chunk_size=500</div>
+            <div class="field-info">Fix for Failure 4b — coherent paragraph-sized chunks set at ingest time
+              <small>Tune per corpus — no universal default exists</small>
+            </div>
+          </div>
+          <div class="field-row" style="border-left:3px solid var(--ms-red);">
+            <div class="field-name" style="color:var(--ms-red);">CI re-ingest</div>
+            <div class="field-info">Fix for Failure 5 — vector store stays current when documents change
+              <small>Same invalidation discipline as prompt_version in §9 Caching</small>
+            </div>
+          </div>
+        </div>
+      </div><!-- /.result-split -->
+      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin-top:0.5rem;">Six lines of configuration. Five failure modes mitigated. §10 measures that they hold; §11 catches what they miss.</p>
 
       <!-- 14. takeaway-box before expandable — verbatim from PLAN.md -->
       <div class="takeaway-box">
