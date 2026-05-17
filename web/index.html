@@ -5277,10 +5277,65 @@ flowchart LR
       </details>
 
       <!-- 16. notebook-pointer block — verbatim from PLAN.md render order item 16 -->
-      <div class="notebook-pointer">
-        <strong>Live demo:</strong> open <code>notebooks/02_rag_pipeline.ipynb</code> and run cells 2–28 (29 cells total).
-        <br/><br/>
-        Cells 2–4 ingest the corpus. Cells 6–7 baseline retrieval. Cells 9–11 demonstrate Failure 1 (parametric vs grounded). Cells 13–15 demonstrate Failure 2 (wrong doc on top, fixed by <code>source_priority</code> re-rank). Cells 17–18 demonstrate Failure 3 (missing context refusal). Cells 20–21 demonstrate Failure 4a (conflicting sources resolved by priority). Cells 23–24 demonstrate Failure 4b (chunk-size sensitivity). Cells 26–27 demonstrate Failure 5 (stale ingestion). Cell 28 is the closing recap — the same realistic question NB 01 cell 24 answered with one hand-pasted doc, now answered with full retrieval.
+      <div class="notebook-pointer" style="padding-bottom:0.25rem;">
+        <strong>Live demo:</strong> open <code>notebooks/02_rag_pipeline.ipynb</code> &nbsp;·&nbsp; 29 cells total
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-top:.9rem;margin-bottom:.25rem;">
+
+          <div style="background:white;border:1px solid #D0D7DE;border-top:3px solid var(--ms-blue);border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:var(--ms-blue);margin-bottom:.3rem;">Cells 2–4</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Ingest the corpus</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Load docs → chunk → embed → persist to Chroma</div>
+          </div>
+
+          <div style="background:white;border:1px solid #D0D7DE;border-top:3px solid #6B7280;border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:#6B7280;margin-bottom:.3rem;">Cells 6–7</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Baseline retrieval</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Retrieve k=5 · inspect RetrievedDocument fields</div>
+          </div>
+
+          <div style="background:white;border:1px solid #FFC9C9;border-top:3px solid var(--ms-red);border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:var(--ms-red);margin-bottom:.3rem;">Cells 9–11</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Failure 1 — Parametric</div>
+            <div style="font-size:12px;color:var(--text-secondary);">No context → wrong; add grounding → exact match</div>
+          </div>
+
+          <div style="background:white;border:1px solid #FFC9C9;border-top:3px solid var(--ms-red);border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:var(--ms-red);margin-bottom:.3rem;">Cells 13–15</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Failure 2 — Wrong doc</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Similarity-only fails; source_priority re-rank fixes</div>
+          </div>
+
+          <div style="background:white;border:1px solid #FFC9C9;border-top:3px solid var(--ms-red);border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:var(--ms-red);margin-bottom:.3rem;">Cells 17–18</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Failure 3 — Missing context</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Score threshold gates LLM call; safe refusal returned</div>
+          </div>
+
+          <div style="background:white;border:1px solid #FFC9C9;border-top:3px solid var(--ms-red);border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:var(--ms-red);margin-bottom:.3rem;">Cells 20–21</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Failure 4a — Conflict</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Two docs disagree; priority filter keeps one source</div>
+          </div>
+
+          <div style="background:white;border:1px solid #FFC9C9;border-top:3px solid var(--ms-red);border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:var(--ms-red);margin-bottom:.3rem;">Cells 23–24</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Failure 4b — Chunk size</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Compare 100 vs 500 vs 2000 — quality difference is visible</div>
+          </div>
+
+          <div style="background:white;border:1px solid #FFC9C9;border-top:3px solid var(--ms-red);border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:var(--ms-red);margin-bottom:.3rem;">Cells 26–27</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Failure 5 — Stale store</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Edit policy → skip re-ingest → wrong; re-ingest → correct</div>
+          </div>
+
+          <div style="background:#F3FBF3;border:1px solid #9FD89F;border-top:3px solid var(--ms-green);border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:#107C10;margin-bottom:.3rem;">Cell 28</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Closing recap</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Same question as NB 01 cell 24 — now answered by full retrieval</div>
+          </div>
+
+        </div>
       </div>
 
       <!-- 17. takeaway-box (closing) — verbatim from PLAN.md -->
