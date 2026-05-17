@@ -399,6 +399,48 @@ def _format_blocked_by(report: GuardrailReport) -> str | None:
     return f"Blocked by: {', '.join(report.blocked_by)}"
 
 
+def _render_session_metrics(*, history_count: int) -> None:
+    trace_store = st.session_state.get("trace_store")
+    traces = trace_store.all_traces() if isinstance(trace_store, LocalTraceStore) else []
+    metrics = compute_metrics(traces)
+    metrics_dict = metrics.as_dict()
+
+    with st.expander(f"📊 Session metrics ({history_count} queries)", expanded=False):
+        st.caption(
+            "Metrics include trace-backed requests only; input-blocked entries stay "
+            "visible in history but do not contribute."
+        )
+
+        first_row = st.columns(2)
+        second_row = st.columns(2)
+
+        with first_row[0]:
+            st.metric("Total queries", str(metrics_dict["total_queries"]))
+        with first_row[1]:
+            st.metric("Avg latency", f"{metrics_dict['avg_latency_ms']:.0f} ms")
+        with second_row[0]:
+            st.metric("Avg tokens", f"{metrics_dict['avg_tokens']:.0f}")
+        with second_row[1]:
+            st.metric("Refuse rate", str(metrics_dict["refuse_rate"]))
+
+        st.caption("Category counts")
+        if metrics.category_counts:
+            st.markdown(_format_category_counts(metrics.category_counts))
+        else:
+            st.markdown("- No classified traces yet.")
+
+
+def _format_category_counts(category_counts: dict[str, int]) -> str:
+    lines = [
+        f"- `{category}`: {count}"
+        for category, count in sorted(
+            category_counts.items(),
+            key=lambda item: (-item[1], item[0]),
+        )
+    ]
+    return "\n".join(lines)
+
+
 def _get_answer_panel_text(entry: ChatHistoryEntry) -> str:
     kind = entry["kind"]
     if kind == "input-blocked":
