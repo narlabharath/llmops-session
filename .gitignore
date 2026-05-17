@@ -34,6 +34,11 @@ env/
 data/chroma/
 data/chroma_nb02/
 data/chroma_nb03/
+data/chroma_nb04/
+data/chroma_nb05/
+data/chroma_nb06/
+data/chroma_ci/
+data/chroma_app/
 data/.cache/
 *.sqlite3
 *.db
