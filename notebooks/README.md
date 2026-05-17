@@ -4,8 +4,6 @@
 
 Demonstrates the core LLM workflow against a real Anthropic backend.
 
-NB 03 (when authored) will consume `src.workflow.run_workflow` to demonstrate the classify->route->answer flow.
-
 ### Run
 
 From inside `llmops-session/`:
@@ -68,3 +66,35 @@ Or open in Jupyter Lab and run cells top-to-bottom.
 
 Cell 9 (ungrounded LLM call) and Cell 28 (closing recap generation) need a valid `ANTHROPIC_API_KEY`. Without one they print `[skipped — no ANTHROPIC_API_KEY]` and the notebook continues. All other cells use `LLMClient(provider="mock")` or show retrieval output only.
 
+---
+
+## 03_workflow_orchestration.ipynb
+
+Demonstrates the workflow orchestration layer end-to-end on top of the sample program corpus: classify, route, retrieve, answer, refuse, escalate, and observe workflow-level cache behavior.
+
+Consumes `src.workflow.run_workflow` and `src.workflow.build_workflow_graph`, building on the retrieval setup from NB 02.
+
+### Run
+
+From inside `llmops-session/`:
+
+```bash
+pip install -r requirements.txt
+# Optionally set ANTHROPIC_API_KEY in .env to use Anthropic in cell 8
+jupyter nbconvert --execute --to notebook --inplace notebooks/03_workflow_orchestration.ipynb
+```
+
+Or open in Jupyter Lab and run cells top-to-bottom.
+
+### Cells
+
+- Cells 0–6 — setup, corpus ingestion into `data/chroma_nb03/`, workflow graph inspection
+- Cells 7–10 — happy path and trace inspection
+- Cells 11–14 — refusal routing for out-of-scope, private-request, and injection attempts
+- Cells 15–18 — escalation on low-confidence retrieval and threshold contrast
+- Cells 19–22 — workflow cache hit/miss and prompt-version invalidation
+- Cells 23–26 — side-by-side recap of answered/refused/escalated outcomes and bridge to NB 04
+
+### Cells that need an API key
+
+Cell 8 uses Anthropic when `ANTHROPIC_API_KEY` is present; without one it falls back to `LLMClient(provider="mock")` and the notebook still executes. Cells 12, 16, 18, 20, 22, and 24 use notebook-local deterministic helpers, so they do not require a key.
