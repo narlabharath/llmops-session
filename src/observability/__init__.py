@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from .metrics import compute_metrics
-from .tracing import LocalTraceStore, get_store
+from .tracing import LocalTraceStore, get_store, trace_workflow
 from .types import SessionMetrics, Span, Trace
 
 __all__ = [
@@ -12,5 +12,6 @@ __all__ = [
     "SessionMetrics",
     "LocalTraceStore",
     "get_store",
+    "trace_workflow",
     "compute_metrics",
 ]
