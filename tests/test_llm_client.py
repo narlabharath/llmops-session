@@ -76,6 +76,16 @@ def test_cache_invalidation_on_kwargs_change() -> None:
     assert second.cache_status == "miss"
 
 
+def test_cache_invalidation_on_per_call_prompt_version_change() -> None:
+    client = LLMClient(provider="mock", cache=True, prompt_version="v1")
+
+    first = client.complete("hello", prompt_version="v1")
+    second = client.complete("hello", prompt_version="v2")
+
+    assert first.cache_status == "miss"
+    assert second.cache_status == "miss"
+
+
 def test_per_call_cache_bypass() -> None:
     client = LLMClient(provider="mock", cache=True)
     client.complete("hello")
@@ -118,6 +128,42 @@ def test_ollama_provider_returns_completion_result_when_transport_is_mocked(
     assert result.model == "llama3.1:8b"
     assert result.provider == "ollama"
     assert result.cache_status == "bypass"
+
+
+def test_prompt_version_is_not_forwarded_to_provider() -> None:
+    class RecordingProvider:
+        def __init__(self) -> None:
+            self.calls: list[dict[str, object]] = []
+
+        def complete(
+            self,
+            prompt: str,
+            system: str | None = None,
+            **kwargs: object,
+        ) -> dict[str, object]:
+            self.calls.append({"prompt": prompt, "system": system, "kwargs": kwargs})
+            return {
+                "text": "ok",
+                "tokens_in": 1,
+                "tokens_out": 1,
+                "raw": None,
+                "model": "recording-model",
+            }
+
+    client = LLMClient(provider="mock", cache=False)
+    provider = RecordingProvider()
+    client._provider = provider  # type: ignore[assignment]
+
+    result = client.complete("hello", system="Be brief", prompt_version="v9", temperature=0.2)
+
+    assert result.text == "ok"
+    assert provider.calls == [
+        {
+            "prompt": "hello",
+            "system": "Be brief",
+            "kwargs": {"temperature": 0.2},
+        }
+    ]
 
 
 def test_unknown_provider_raises_valueerror() -> None:

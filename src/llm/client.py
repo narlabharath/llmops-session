@@ -118,6 +118,7 @@ class LLMClient:
         cache: bool | None = None,
         **kwargs: Any,
     ) -> CompletionResult:
+        prompt_version = str(kwargs.pop("prompt_version", self._prompt_version))
         cache_enabled = self._cache_enabled if cache is None else cache
         if not cache_enabled:
             if self._cache is not None:
@@ -131,7 +132,7 @@ class LLMClient:
             prompt=prompt,
             system=system,
             model=self._model,
-            prompt_version=self._prompt_version,
+            prompt_version=prompt_version,
             kwargs=kwargs,
         )
 
