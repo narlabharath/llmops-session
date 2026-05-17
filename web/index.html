@@ -4865,26 +4865,24 @@ flowchart LR
       </div><!-- /.result-split -->
 
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin:1rem 0 .6rem;">Query: "What is the late submission policy?" → k=5 results</div>
-      <div style="margin:0 0 1rem;">
-        <div style="display:flex;flex-direction:column;gap:.5rem;">
-          <div style="background:#fff;border:1px solid #D0D7DE;border-left:3px solid var(--ms-blue);border-radius:6px;padding:.7rem 1rem;display:grid;grid-template-columns:130px 1fr;gap:.2rem .75rem;font-size:13px;">
-            <span style="color:var(--ink-soft);">document_id</span><span><strong>program_policy</strong></span>
-            <span style="color:var(--ink-soft);">source_priority</span><span><strong>1</strong> <span style="color:var(--ink-soft);font-style:italic;">(most authoritative)</span></span>
-            <span style="color:var(--ink-soft);">score</span><span><strong>0.9841</strong></span>
-            <span style="color:var(--ink-soft);">text</span><span style="color:#555;font-style:italic;">"Participants must attend at least 80% of live sessions..."</span>
-          </div>
-          <div style="background:#F8F8F8;border:1px solid #D0D7DE;border-left:3px solid #9CA3AF;border-radius:6px;padding:.7rem 1rem;display:grid;grid-template-columns:130px 1fr;gap:.2rem .75rem;font-size:13px;">
-            <span style="color:var(--ink-soft);">document_id</span><span><strong>assignment_guidelines</strong></span>
-            <span style="color:var(--ink-soft);">source_priority</span><span><strong>2</strong></span>
-            <span style="color:var(--ink-soft);">score</span><span><strong>0.9512</strong></span>
-            <span style="color:var(--ink-soft);">text</span><span style="color:#555;font-style:italic;">"Assignment 2 is due on the last Friday of Module 3..."</span>
-          </div>
-          <div style="background:#F8F8F8;border:1px solid #D0D7DE;border-left:3px solid #9CA3AF;border-radius:6px;padding:.7rem 1rem;display:grid;grid-template-columns:130px 1fr;gap:.2rem .75rem;font-size:13px;">
-            <span style="color:var(--ink-soft);">document_id</span><span><strong>sample_faq</strong></span>
-            <span style="color:var(--ink-soft);">source_priority</span><span><strong>5</strong></span>
-            <span style="color:var(--ink-soft);">score</span><span><strong>0.8873</strong></span>
-            <span style="color:var(--ink-soft);">text</span><span style="color:#555;font-style:italic;">"Q: What happens if I miss the deadline? A: Late submissions..."</span>
-          </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:0 0 1rem;">
+        <div style="background:#fff;border:1px solid #D0D7DE;border-left:3px solid var(--ms-blue);border-radius:6px;padding:.7rem 1rem;display:grid;grid-template-columns:auto 1fr;gap:.25rem .75rem;font-size:13px;align-content:start;">
+          <span style="color:var(--ink-soft);">document_id</span><span><strong>program_policy</strong></span>
+          <span style="color:var(--ink-soft);">source_priority</span><span><strong>1</strong> <span style="color:var(--ink-soft);font-style:italic;">(most authoritative)</span></span>
+          <span style="color:var(--ink-soft);">score</span><span><strong>0.9841</strong></span>
+          <span style="color:var(--ink-soft);">text</span><span style="color:#555;font-style:italic;">"Participants must attend at least 80% of live sessions..."</span>
+        </div>
+        <div style="background:#F8F8F8;border:1px solid #D0D7DE;border-left:3px solid #9CA3AF;border-radius:6px;padding:.7rem 1rem;display:grid;grid-template-columns:auto 1fr;gap:.25rem .75rem;font-size:13px;align-content:start;">
+          <span style="color:var(--ink-soft);">document_id</span><span><strong>assignment_guidelines</strong></span>
+          <span style="color:var(--ink-soft);">source_priority</span><span><strong>2</strong></span>
+          <span style="color:var(--ink-soft);">score</span><span><strong>0.9512</strong></span>
+          <span style="color:var(--ink-soft);">text</span><span style="color:#555;font-style:italic;">"Assignment 2 is due on the last Friday of Module 3..."</span>
+        </div>
+        <div style="background:#F8F8F8;border:1px solid #D0D7DE;border-left:3px solid #9CA3AF;border-radius:6px;padding:.7rem 1rem;display:grid;grid-template-columns:auto 1fr;gap:.25rem .75rem;font-size:13px;align-content:start;">
+          <span style="color:var(--ink-soft);">document_id</span><span><strong>sample_faq</strong></span>
+          <span style="color:var(--ink-soft);">source_priority</span><span><strong>5</strong></span>
+          <span style="color:var(--ink-soft);">score</span><span><strong>0.8873</strong></span>
+          <span style="color:var(--ink-soft);">text</span><span style="color:#555;font-style:italic;">"Q: What happens if I miss the deadline? A: Late submissions..."</span>
         </div>
       </div>
       <aside class="callout callout-info">
