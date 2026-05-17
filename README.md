@@ -30,6 +30,16 @@ streamlit run src/app/streamlit_app.py
 # opens at http://localhost:8501
 ```
 
+## Run the MVP
+
+From `llmops-session/`, launch the one-screen Streamlit MVP with:
+
+```bash
+streamlit run src/app/streamlit_app.py
+```
+
+The MVP demonstrates how the course's six `src/` layers land as one product surface: a single screen with question, answer, trace, and history panels, backed by the existing `src/llm`, `src/rag`, `src/workflow`, `src/guardrails`, `src/observability`, and `src/evals` architecture described in `dev-docs/PLAN.md` Section S-13. The app itself stays a thin composition shell rather than introducing new business logic.
+
 ## What's inside
 
 ```
