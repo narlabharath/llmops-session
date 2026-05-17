@@ -23,6 +23,7 @@ _CLASSIFIER_SYSTEM_PROMPT: Final[str] = (
 _PROMPT_VERSION: Final[str] = "v1"
 _ANSWER_SYSTEM_PROMPT_NAME: Final[str] = "program_assistant_system"
 _GROUND_ANSWER_PROMPT_NAME: Final[str] = "ground_answer"
+_ESCALATION_PROMPT_NAME: Final[str] = "escalate_low_confidence"
 _VALID_CLASSIFICATIONS: Final[set[str]] = {
     "policy_question",
     "schedule_question",
@@ -32,6 +33,11 @@ _VALID_CLASSIFICATIONS: Final[set[str]] = {
     "private_request",
 }
 _FALLBACK_CLASSIFICATION: Final[str] = "out_of_scope"
+_REFUSAL_PROMPT_NAMES: Final[dict[str, str]] = {
+    "out_of_scope": "refuse_out_of_scope",
+    "private_request": "refuse_private_request",
+    "injection_attempt": "refuse_injection_attempt",
+}
 
 
 def classify_question(state: WorkflowState, llm: LLMClient | None = None) -> dict[str, object]:
@@ -41,7 +47,11 @@ def classify_question(state: WorkflowState, llm: LLMClient | None = None) -> dic
     template = load_prompt("classify_question", version=_PROMPT_VERSION)
     prompt = template.format(question=question)
     llm_client = llm or LLMClient(provider="mock", prompt_version=_PROMPT_VERSION)
-    result = llm_client.complete(prompt, system=_CLASSIFIER_SYSTEM_PROMPT)
+    result = llm_client.complete(
+        prompt,
+        system=_CLASSIFIER_SYSTEM_PROMPT,
+        prompt_version=_PROMPT_VERSION,
+    )
     classification = _parse_classification(result.text)
     trace_entry: TraceEntry = {
         "node": "classify",
@@ -112,6 +122,51 @@ def generate_answer(state: WorkflowState, llm: LLMClient | None = None) -> dict[
     return {"answer": answer, "trace": trace}
 
 
+def refuse(state: WorkflowState) -> dict[str, object]:
+    """Render a refusal message for unsupported or unsafe requests."""
+
+    question = state["question"]
+    classification = state["classification"]
+    try:
+        prompt_name = _REFUSAL_PROMPT_NAMES[classification]
+    except KeyError as exc:
+        raise ValueError(f"Unsupported refusal classification: {classification!r}") from exc
+
+    started = perf_counter()
+    template = load_prompt(prompt_name, version=_PROMPT_VERSION)
+    refusal_reason = template.format(question=question)
+    latency_ms = (perf_counter() - started) * 1000
+    trace_entry: TraceEntry = {
+        "node": "refuse",
+        "input": question,
+        "output": refusal_reason,
+        "classification": classification,
+        "latency_ms": latency_ms,
+        "prompt_version": _PROMPT_VERSION,
+    }
+    trace = [*state.get("trace", []), trace_entry]
+    return {"refusal_reason": refusal_reason, "trace": trace}
+
+
+def escalate(state: WorkflowState) -> dict[str, object]:
+    """Render an escalation note for low-confidence workflow outcomes."""
+
+    question = state["question"]
+    started = perf_counter()
+    template = load_prompt(_ESCALATION_PROMPT_NAME, version=_PROMPT_VERSION)
+    escalation_reason = template.format(question=question)
+    latency_ms = (perf_counter() - started) * 1000
+    trace_entry: TraceEntry = {
+        "node": "escalate",
+        "input": question,
+        "output": escalation_reason,
+        "latency_ms": latency_ms,
+        "prompt_version": _PROMPT_VERSION,
+    }
+    trace = [*state.get("trace", []), trace_entry]
+    return {"escalation_reason": escalation_reason, "trace": trace}
+
+
 def _parse_classification(raw_output: str) -> str:
     normalized = raw_output.strip().lower()
     if normalized in _VALID_CLASSIFICATIONS:
@@ -179,4 +234,10 @@ def _get_retrieved_doc_id(document: RetrievedDocument) -> str:
     )
 
 
-__all__ = ["classify_question", "retrieve_documents", "generate_answer"]
+__all__ = [
+    "classify_question",
+    "retrieve_documents",
+    "generate_answer",
+    "refuse",
+    "escalate",
+]

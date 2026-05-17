@@ -32,6 +32,8 @@ env/
 
 # --- Vector store / data caches ----------------------------------------------
 data/chroma/
+data/chroma_nb02/
+data/chroma_nb03/
 data/.cache/
 *.sqlite3
 *.db
