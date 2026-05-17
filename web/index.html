@@ -4719,10 +4719,41 @@ r3 = client_v2.complete(prompt)
       <p style="font-size:13px;font-style:italic;color:var(--ink-soft);margin-top:0.5rem;">One LLM call. Four levers applied. Full metadata captured. §8 turns this into many — one query, hundreds of documents, automatic retrieval.</p>
 
       <!-- 13. notebook-pointer — verbatim from PLAN.md item 13 -->
-      <div class="notebook-pointer">
-        <strong>Live demo:</strong> open <code>notebooks/01_core_llm_workflow.ipynb</code> and run cells 16–25.
-        <br/><br/>
-        Cells 16–17 demonstrate few-shot classification (zero-shot vs two-shot). Cells 18–19 demonstrate structured JSON output with parse and fallback. Cells 20–21 demonstrate document grounding (cold vs grounded answer). Cell 22 explains prompt versioning and cache invalidation. Cells 23–25 are the closing arc: all four levers applied to one real participant question, with full metadata printed.
+      <div class="notebook-pointer" style="padding-bottom:0.25rem;">
+        <strong>Live demo:</strong> open <code>notebooks/01_core_llm_workflow.ipynb</code> &nbsp;·&nbsp; cells 16–25
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-top:.9rem;margin-bottom:.25rem;">
+
+          <div style="background:white;border:1px solid #D0D7DE;border-top:3px solid var(--ms-orange);border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:var(--ms-orange);margin-bottom:.3rem;">Cells 16–17</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Lever 2 — Few-shot</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Zero-shot vs two-shot; shape the output format</div>
+          </div>
+
+          <div style="background:white;border:1px solid #D0D7DE;border-top:3px solid var(--ms-green);border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:var(--ms-green);margin-bottom:.3rem;">Cells 18–19</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Lever 3 — Structured output</div>
+            <div style="font-size:12px;color:var(--text-secondary);">JSON schema request · parse with fallback</div>
+          </div>
+
+          <div style="background:white;border:1px solid #D0D7DE;border-top:3px solid var(--ms-purple);border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:var(--ms-purple);margin-bottom:.3rem;">Cells 20–21</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Lever 4 — Grounding</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Cold answer vs doc-grounded answer — side by side</div>
+          </div>
+
+          <div style="background:white;border:1px solid #D0D7DE;border-top:3px solid var(--ms-blue);border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:var(--ms-blue);margin-bottom:.3rem;">Cell 22</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Lever 5 — Versioning</div>
+            <div style="font-size:12px;color:var(--text-secondary);">prompt_version · cache invalidation on change</div>
+          </div>
+
+          <div style="background:#F3FBF3;border:1px solid #9FD89F;border-top:3px solid var(--ms-green);border-radius:6px;padding:.65rem .8rem;">
+            <div style="font-family:monospace;font-size:11px;font-weight:700;color:#107C10;margin-bottom:.3rem;">Cells 23–25</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:.2rem;">Closing arc — all four levers</div>
+            <div style="font-size:12px;color:var(--text-secondary);">One real question · full metadata printed</div>
+          </div>
+
+        </div>
       </div>
 
       <!-- 14. takeaway-box — verbatim from PLAN.md item 14 -->
