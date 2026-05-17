@@ -1529,12 +1529,12 @@
     @media (max-width: 768px) {
       #section7 .result-split { grid-template-columns: 1fr; }
     }
-    /* S8 CSS scope — mobile-responsive side-by-side cold/grounded splits */
+    /* S8 CSS scope — mobile-responsive side-by-side panels */
     #section8 .s8-split {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin: 1.5rem 0;
+      gap: 1.25rem;
+      margin: 1.25rem 0;
       align-items: start;
     }
     @media (max-width: 768px) {
@@ -4742,251 +4742,285 @@ flowchart TB
         <figcaption style="font-size:13px;color:var(--ink-soft);margin-top:0.5rem;font-style:italic;">Two halves. Ingestion (top) runs once per corpus version. Retrieval + generation (bottom) runs once per question. The <code>same M</code> embedding model on both halves is non-negotiable — change one, you must re-ingest.</figcaption>
       </figure>
 
-      <!-- 6. h3 Ingest the corpus + code excerpt NB 02 cell 4 -->
+      <!-- 6. Ingest the corpus — visual only -->
       <h3>Ingest the corpus</h3>
-      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">One call loads the five sample policy documents, splits them into fixed-size chunks, embeds each chunk, and persists the vector store to disk. Four knobs control everything.</p>
-      <div class="code-container">
-        <div class="code-header"><span>NB 02 · cell 4</span></div>
-        <pre><code class="language-python">corpus_dir  = repo_root / "data"
-persist_dir = repo_root / "data" / "chroma_nb02"
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">One call loads the corpus, splits it into fixed-size chunks, embeds each chunk, and persists the index to disk. Four knobs control the whole process — tune them once per corpus and re-run whenever source documents change.</p>
 
-result = ingest(
-    corpus_dir=corpus_dir,
-    persist_dir=persist_dir,
-    chunk_size=500,
-    chunk_overlap=50,
-)
-print(f"documents_loaded : {result.documents_loaded}")
-print(f"chunks_created   : {result.chunks_created}")
-print(f"embedding_model  : {result.embedding_model}")
-# 5 docs · 23 chunks · all-MiniLM-L6-v2 · persisted to disk</code></pre>
+      <div style="display:grid;grid-template-columns:1fr 56px 1fr;align-items:start;gap:1rem;background:#F8F9FA;border:1px solid var(--border-color);border-radius:8px;padding:1.5rem;margin:1rem 0;">
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:.75rem;">Four knobs</div>
+          <div style="display:flex;flex-direction:column;gap:.5rem;">
+            <div style="background:#fff;border:1px solid #D0D7DE;border-radius:6px;padding:.5rem .85rem;font-size:13px;"><code>corpus_dir</code> — path to source documents</div>
+            <div style="background:#fff;border:1px solid #D0D7DE;border-radius:6px;padding:.5rem .85rem;font-size:13px;"><code>persist_dir</code> — where the vector store lives on disk</div>
+            <div style="background:#fff;border:1px solid #D0D7DE;border-radius:6px;padding:.5rem .85rem;font-size:13px;"><code>chunk_size</code> — characters per chunk <em>(default 500)</em></div>
+            <div style="background:#fff;border:1px solid #D0D7DE;border-radius:6px;padding:.5rem .85rem;font-size:13px;"><code>chunk_overlap</code> — overlap between adjacent chunks <em>(default 50)</em></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:2.5rem;gap:.2rem;">
+          <div style="font-size:1.5rem;color:var(--ms-blue);">→</div>
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);text-align:center;">one<br/>call</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:.75rem;">What you get</div>
+          <div style="display:flex;flex-direction:column;gap:.5rem;">
+            <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:6px;padding:.5rem .85rem;font-size:13px;">📄 <strong>5 docs</strong> loaded from corpus</div>
+            <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:6px;padding:.5rem .85rem;font-size:13px;">🧩 <strong>23 chunks</strong> created &amp; embedded</div>
+            <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:6px;padding:.5rem .85rem;font-size:13px;">🔤 <strong>all-MiniLM-L6-v2</strong> — embedding model</div>
+            <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:6px;padding:.5rem .85rem;font-size:13px;">💾 Vector store <strong>persisted to disk</strong></div>
+          </div>
+        </div>
       </div>
-      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);">One call. Four knobs (corpus, persist, chunk size, overlap). NB 02 cell 4 runs this against the 5 sample policy docs. Re-run with a different <code>chunk_size</code> and the whole vector store is different — see Failure 4b.</p>
+      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);">Re-run with a different <code>chunk_size</code> and the whole vector store changes — see Failure 4b.</p>
 
-      <!-- 7. h3 Baseline retrieval + code NB 02 cells 6–7 + callout-info -->
+      <!-- 7. Baseline retrieval — visual only -->
       <h3>Baseline retrieval</h3>
-      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">With the store persisted, retrieval is one call. Each result is a <code>RetrievedDocument</code> carrying the chunk text, its document identity, an authority rank, and a similarity score.</p>
-      <div class="code-container">
-        <div class="code-header"><span>NB 02 · cells 6–7</span></div>
-        <pre><code class="language-python">from src.rag import retrieve
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">With the store persisted, a retrieval call returns ranked <code>RetrievedDocument</code> objects. Results are ordered by <strong>similarity score</strong> — not by document authority. That gap is exactly what Failure 2 exploits.</p>
 
-hits = retrieve(persist_dir, "What is the late submission policy?", k=5)
-for i, doc in enumerate(hits, 1):
-    print(f"Hit {i}")
-    print(f"  document_id     : {doc.chunk.metadata.document_id}")
-    print(f"  source_priority : {doc.chunk.metadata.source_priority}")
-    print(f"  score           : {doc.score:.4f}")
-    print(f"  text (first 200): {doc.chunk.text[:200]!r}")</code></pre>
+      <div style="margin:1rem 0;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:.6rem;">Query: "What is the late submission policy?" → k=5 results</div>
+        <div style="display:flex;flex-direction:column;gap:.5rem;">
+          <div style="background:#fff;border:1px solid #D0D7DE;border-left:3px solid var(--ms-blue);border-radius:6px;padding:.7rem 1rem;display:grid;grid-template-columns:130px 1fr;gap:.2rem .75rem;font-size:13px;">
+            <span style="color:var(--ink-soft);">document_id</span><span><strong>program_policy</strong></span>
+            <span style="color:var(--ink-soft);">source_priority</span><span><strong>1</strong> <span style="color:var(--ink-soft);font-style:italic;">(most authoritative)</span></span>
+            <span style="color:var(--ink-soft);">score</span><span><strong>0.9841</strong></span>
+            <span style="color:var(--ink-soft);">text</span><span style="color:#555;font-style:italic;">"Participants must attend at least 80% of live sessions..."</span>
+          </div>
+          <div style="background:#F8F8F8;border:1px solid #D0D7DE;border-left:3px solid #9CA3AF;border-radius:6px;padding:.7rem 1rem;display:grid;grid-template-columns:130px 1fr;gap:.2rem .75rem;font-size:13px;">
+            <span style="color:var(--ink-soft);">document_id</span><span><strong>assignment_guidelines</strong></span>
+            <span style="color:var(--ink-soft);">source_priority</span><span><strong>2</strong></span>
+            <span style="color:var(--ink-soft);">score</span><span><strong>0.9512</strong></span>
+            <span style="color:var(--ink-soft);">text</span><span style="color:#555;font-style:italic;">"Assignment 2 is due on the last Friday of Module 3..."</span>
+          </div>
+          <div style="background:#F8F8F8;border:1px solid #D0D7DE;border-left:3px solid #9CA3AF;border-radius:6px;padding:.7rem 1rem;display:grid;grid-template-columns:130px 1fr;gap:.2rem .75rem;font-size:13px;">
+            <span style="color:var(--ink-soft);">document_id</span><span><strong>sample_faq</strong></span>
+            <span style="color:var(--ink-soft);">source_priority</span><span><strong>5</strong></span>
+            <span style="color:var(--ink-soft);">score</span><span><strong>0.8873</strong></span>
+            <span style="color:var(--ink-soft);">text</span><span style="color:#555;font-style:italic;">"Q: What happens if I miss the deadline? A: Late submissions..."</span>
+          </div>
+        </div>
       </div>
       <aside class="callout callout-info">
-        <strong>What <code>RetrievedDocument</code> carries:</strong> the chunk text, its <code>document_id</code>, a numeric <code>source_priority</code> (lower = more authoritative), and a similarity <code>score</code>. The priority field is metadata the corpus author sets on each doc — it is what Failure 2's fix relies on.
+        <strong>What <code>RetrievedDocument</code> carries:</strong> the chunk text, its <code>document_id</code>, a numeric <code>source_priority</code> (lower = more authoritative), and a similarity <code>score</code>. The priority field is metadata you set on each doc at ingest time — it is what Failure 2's fix relies on.
       </aside>
 
-      <!-- 8. h3 Failure 1 — Parametric knowledge is not your policy -->
+      <!-- 8. Failure 1 — Parametric knowledge is not your policy -->
       <h3>Failure 1 — Parametric knowledge is not your policy</h3>
-      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">Ask the model about a common rule without any context and it draws from training data averages — fluently, confidently, and specifically wrong. Passing the retrieved chunk replaces the guess with a citation.</p>
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">Ask the model about a program rule without any retrieved context and it draws on training data averages — fluently, confidently, and specifically wrong for your program.</p>
 
       <div class="s8-split">
-        <!-- Cell 9 — ungrounded -->
         <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;overflow:hidden;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;padding:0.6rem 1rem;border-bottom:1px solid #FFC9C9;">NB 02 · cell 9 — Ungrounded (parametric only)</div>
-          <pre style="margin:0;padding:1rem;font-size:13px;white-space:pre-wrap;line-height:1.6;background:#FFF5F5;">QUESTION = (
-    "In a typical online AI engineering "
-    "certification program, what is the "
-    "standard minimum % of live sessions "
-    "a participant must attend?"
-)
-client = LLMClient()
-result = client.complete(prompt=QUESTION, cache=False)
-print(result.text)
-<span style="color:#A4262C;"># → "Typically 75% — most programs accept
-#    70–80%; check your handbook."
-#    ← invented; this program's rule is 80%</span></pre>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;padding:.6rem 1rem;border-bottom:1px solid #FFC9C9;">❌ No retrieved context</div>
+          <div style="padding:1rem;font-size:13px;line-height:1.8;">
+            <div style="color:#555;font-style:italic;margin-bottom:.5rem;">"What is the minimum % of live sessions a participant must attend?"</div>
+            <div style="color:#A4262C;">↓ model draws from training data</div>
+            <div style="color:#A4262C;">↓ returns industry average</div>
+            <div style="background:#FFE8E8;border-left:3px solid #FC8181;border-radius:4px;padding:.6rem .85rem;margin:.6rem 0;">
+              💬 <strong>Model answers:</strong><br/>"Typically 75% — most programs accept 70–80%. Check your handbook."
+            </div>
+            <div style="color:#A4262C;font-weight:600;">⚠ Invented. This program's rule is 80%.</div>
+          </div>
         </div>
-        <!-- Cell 10 — grounded -->
         <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;overflow:hidden;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;padding:0.6rem 1rem;border-bottom:1px solid #9FD89F;">NB 02 · cell 10 — Grounded (retrieved chunk)</div>
-          <pre style="margin:0;padding:1rem;font-size:13px;white-space:pre-wrap;line-height:1.6;background:#F3FBF3;">grounded_hits = retrieve(
-    persist_dir,
-    "minimum attendance percentage live sessions",
-    k=3
-)
-context = "\n\n".join(
-    f"[{d.chunk.metadata.document_id}]\n{d.chunk.text}"
-    for d in grounded_hits
-)
-prompt = f"Use only:\n{context}\n\nQuestion: {QUESTION}"
-result = client.complete(prompt=prompt)
-print(result.text)
-<span style="color:#107C10;"># → "80% of live sessions, tracked automatically."
-#    ← matches the policy doc exactly</span></pre>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;padding:.6rem 1rem;border-bottom:1px solid #9FD89F;">✅ Retrieved policy chunk injected</div>
+          <div style="padding:1rem;font-size:13px;line-height:1.8;">
+            <div style="color:#555;font-style:italic;margin-bottom:.5rem;">"What is the minimum % of live sessions a participant must attend?"</div>
+            <div style="background:#E6F4E6;border-left:3px solid #68D391;border-radius:4px;padding:.5rem .75rem;margin:.4rem 0;font-style:italic;color:#444;">[program_policy]<br/>"Participants must attend at least 80% of live sessions. Attendance is tracked automatically."</div>
+            <div style="color:#107C10;">↓ model reads the policy doc</div>
+            <div style="background:#D4EDDA;border-left:3px solid #28A745;border-radius:4px;padding:.6rem .85rem;margin:.6rem 0;">
+              💬 <strong>Model answers:</strong><br/>"80% of live sessions, tracked automatically."
+            </div>
+            <div style="color:#107C10;font-weight:600;">✓ Matches the policy doc exactly.</div>
+          </div>
         </div>
       </div>
-      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);">Same model. Forcing a single number with "most common" draws on parametric averages; passing the retrieved chunk replaces guess with citation.</p>
 
-      <!-- 9. h3 Failure 2 — Wrong doc on top -->
+      <!-- 9. Failure 2 — Wrong doc on top -->
       <h3>Failure 2 — Wrong doc on top</h3>
-      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">Raw similarity retrieval picks whatever text is closest to the query — not whatever source is most authoritative. For a deadline question, the <em>assignment guidelines</em> doc (<code>source_priority=2</code>) is lexically closer than the <em>program policy</em> (<code>source_priority=1</code>), so it ranks first. Cell 13 shows the failure; cell 14 shows the fix.</p>
-      <div class="code-container">
-        <div class="code-header"><span>NB 02 · cell 13 — raw similarity: wrong doc on top</span></div>
-        <pre><code class="language-python">BAD_QUERY = "when is assignment 2 due"
-bad_hits = retrieve(persist_dir, BAD_QUERY, k=3)
-for rank, doc in enumerate(bad_hits, 1):
-    print(f"#{rank}  {doc.chunk.metadata.document_id!r:28s}"
-          f"  source_priority={doc.chunk.metadata.source_priority}"
-          f"  score={doc.score:.4f}")
-# ⚠  Top result has source_priority=2 (assignment_guidelines ranks above
-#    program_policy source_priority=1 for a deadline question)</code></pre>
-      </div>
-      <div class="code-container">
-        <div class="code-header"><span>NB 02 · cell 14 — fix: over-fetch + re-rank by source_priority</span></div>
-        <pre><code class="language-python">wide_hits = retrieve(persist_dir, BAD_QUERY, k=10)
-reranked  = sorted(wide_hits, key=lambda d: d.chunk.metadata.source_priority)
-top3      = reranked[:3]
-for rank, doc in enumerate(top3, 1):
-    print(f"#{rank}  {doc.chunk.metadata.document_id!r:28s}"
-          f"  source_priority={doc.chunk.metadata.source_priority}"
-          f"  score={doc.score:.4f}")
-# ✓  Policy doc (source_priority=1) is now #1 after re-ranking</code></pre>
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">Similarity search ranks by semantic closeness, not by document authority. For a deadline question, the <em>assignment guidelines</em> doc scores higher than the <em>program policy</em> — so it surfaces first, even though it's less authoritative.</p>
+
+      <div class="s8-split">
+        <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;overflow:hidden;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;padding:.6rem 1rem;border-bottom:1px solid #FFC9C9;">❌ Ranked by similarity only</div>
+          <div style="padding:1rem;font-size:13px;line-height:1.6;">
+            <div style="color:#555;font-style:italic;margin-bottom:.75rem;">Query: "when is assignment 2 due"</div>
+            <div style="display:flex;flex-direction:column;gap:.4rem;">
+              <div style="background:#FFE8E8;border-radius:5px;padding:.45rem .75rem;display:grid;grid-template-columns:auto 1fr;gap:.2rem .5rem;align-items:baseline;">
+                <span style="font-weight:700;color:#A4262C;">#1</span><span>assignment_guidelines</span>
+                <span></span><span style="font-family:monospace;font-size:11px;color:#A4262C;">priority=2 · score=0.97 ← wrong source on top</span>
+              </div>
+              <div style="background:#FFF5F5;border-radius:5px;padding:.45rem .75rem;display:grid;grid-template-columns:auto 1fr;gap:.2rem .5rem;align-items:baseline;">
+                <span style="font-weight:700;">#2</span><span>program_policy</span>
+                <span></span><span style="font-family:monospace;font-size:11px;color:#888;">priority=1 · score=0.91</span>
+              </div>
+              <div style="background:#FFF5F5;border-radius:5px;padding:.45rem .75rem;display:grid;grid-template-columns:auto 1fr;gap:.2rem .5rem;align-items:baseline;">
+                <span style="font-weight:700;">#3</span><span>sample_faq</span>
+                <span></span><span style="font-family:monospace;font-size:11px;color:#888;">priority=5 · score=0.88</span>
+              </div>
+            </div>
+            <div style="color:#A4262C;font-weight:600;margin-top:.75rem;">⚠ Most authoritative doc is buried at #2</div>
+          </div>
+        </div>
+        <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;overflow:hidden;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;padding:.6rem 1rem;border-bottom:1px solid #9FD89F;">✅ Over-fetch + re-rank by source_priority</div>
+          <div style="padding:1rem;font-size:13px;line-height:1.6;">
+            <div style="color:#555;font-style:italic;margin-bottom:.5rem;">Query: "when is assignment 2 due"</div>
+            <div style="font-size:12px;color:#555;margin-bottom:.75rem;">Retrieve k=10 → sort by source_priority → take top 3</div>
+            <div style="display:flex;flex-direction:column;gap:.4rem;">
+              <div style="background:#D4EDDA;border-radius:5px;padding:.45rem .75rem;display:grid;grid-template-columns:auto 1fr;gap:.2rem .5rem;align-items:baseline;">
+                <span style="font-weight:700;color:#107C10;">#1</span><span>program_policy</span>
+                <span></span><span style="font-family:monospace;font-size:11px;color:#107C10;">priority=1 · score=0.91 ← now on top</span>
+              </div>
+              <div style="background:#E6F4E6;border-radius:5px;padding:.45rem .75rem;display:grid;grid-template-columns:auto 1fr;gap:.2rem .5rem;align-items:baseline;">
+                <span style="font-weight:700;">#2</span><span>assignment_guidelines</span>
+                <span></span><span style="font-family:monospace;font-size:11px;color:#888;">priority=2 · score=0.97</span>
+              </div>
+              <div style="background:#E6F4E6;border-radius:5px;padding:.45rem .75rem;display:grid;grid-template-columns:auto 1fr;gap:.2rem .5rem;align-items:baseline;">
+                <span style="font-weight:700;">#3</span><span>sample_faq</span>
+                <span></span><span style="font-family:monospace;font-size:11px;color:#888;">priority=5 · score=0.88</span>
+              </div>
+            </div>
+            <div style="color:#107C10;font-weight:600;margin-top:.75rem;">✓ Policy doc wins regardless of similarity score</div>
+          </div>
+        </div>
       </div>
       <div class="mistake-box">
-        <strong>The mistake:</strong> trusting cosine similarity alone. Embedding similarity ranks by lexical/semantic closeness, not by authority. Two-stage retrieval — over-fetch then re-rank by a metadata field you control — is the cheapest fix.
+        <strong>The mistake:</strong> trusting cosine similarity alone. Similarity ranks by lexical closeness, not by authority. Two-stage retrieval — over-fetch then re-rank by a metadata field you control — is the cheapest fix.
       </div>
 
-      <!-- 10. h3 Failure 3 — Missing context -->
+      <!-- 10. Failure 3 — Missing context -->
       <h3>Failure 3 — Missing context</h3>
-      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">Ask the corpus a question it has no answer for and the retriever returns its closest neighbors anyway. A score threshold detects the obvious miss; a canned refusal replaces the LLM call so the model never hallucinates a confident wrong answer.</p>
-      <div class="code-container">
-        <div class="code-header"><span>NB 02 · cell 17 — out-of-corpus query; observe low max score</span></div>
-        <pre><code class="language-python">MISSING_QUERY = "What is the recipe for chocolate chip cookies?"
-missing_hits  = retrieve(persist_dir, MISSING_QUERY, k=3)
-max_score     = max(d.score for d in missing_hits)
-print(f"Max similarity score: {max_score:.4f}")
-# → Max similarity score: ≈ 0.88
-#   Compare to in-domain queries (≈ 0.99): noticeably lower.
-#   A threshold of 0.93 would trigger refusal for this corpus.</code></pre>
-      </div>
-      <div class="code-container">
-        <div class="code-header"><span>NB 02 · cell 18 — refusal helper: canned response below threshold</span></div>
-        <pre><code class="language-python">CORPUS_THRESHOLD = 0.93  # in-domain ≈ 0.97–0.99; out-of-domain ≈ 0.70–0.90
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">Ask about something not in the corpus and the retriever returns its nearest neighbors anyway — with no indication they're irrelevant. A score threshold detects the miss and short-circuits the LLM call before hallucination happens.</p>
 
-def grounded_answer_or_refuse(query, k=3, min_score=CORPUS_THRESHOLD):
-    docs = retrieve(persist_dir, query, k=k)
-    if not docs or max(d.score for d in docs) &lt; min_score:
-        return (
-            "I don't see information about that in the program documents. "
-            "Please contact the program team."
-        )
-    context = "\n\n".join(
-        f"[{d.chunk.metadata.document_id}]\n{d.chunk.text}" for d in docs
-    )
-    return LLMClient(provider="mock").complete(
-        f"Answer using only:\n{context}\n\nQuestion: {query}"
-    ).text
-
-print(grounded_answer_or_refuse(MISSING_QUERY))
-# → "I don't see information about that in the program documents."</code></pre>
+      <div class="s8-split">
+        <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;overflow:hidden;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;padding:.6rem 1rem;border-bottom:1px solid #FFC9C9;">❌ No threshold — LLM call proceeds</div>
+          <div style="padding:1rem;font-size:13px;line-height:1.8;">
+            <div style="color:#555;font-style:italic;margin-bottom:.5rem;">"What is the recipe for chocolate chip cookies?"</div>
+            <div>Retriever returns nearest neighbors (irrelevant policy chunks)</div>
+            <div style="color:#A4262C;">↓ no score check — LLM call proceeds</div>
+            <div style="background:#FFE8E8;border-left:3px solid #FC8181;border-radius:4px;padding:.6rem .85rem;margin:.6rem 0;">
+              💬 <strong>Model answers:</strong><br/>"Combine 2 cups flour, 1 cup butter..." (hallucinated)
+            </div>
+            <div style="color:#A4262C;font-weight:600;">⚠ Confident fabrication for an out-of-corpus question</div>
+          </div>
+        </div>
+        <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;overflow:hidden;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;padding:.6rem 1rem;border-bottom:1px solid #9FD89F;">✅ Score threshold — refusal before LLM</div>
+          <div style="padding:1rem;font-size:13px;line-height:1.8;">
+            <div style="color:#555;font-style:italic;margin-bottom:.5rem;">"What is the recipe for chocolate chip cookies?"</div>
+            <div>Max similarity score: <strong>0.88</strong></div>
+            <div style="color:#107C10;">↓ 0.88 &lt; threshold (0.93) — LLM call skipped</div>
+            <div style="background:#D4EDDA;border-left:3px solid #28A745;border-radius:4px;padding:.6rem .85rem;margin:.6rem 0;">
+              💬 <strong>Returns:</strong><br/>"I don't see information about that in the program documents."
+            </div>
+            <div style="color:#107C10;font-weight:600;">✓ Safe refusal — hallucination impossible</div>
+          </div>
+        </div>
       </div>
       <aside class="callout callout-warning">
         <strong>Score thresholds are a noisy signal.</strong> They catch the obvious-miss case but fail on confidently-wrong neighbors. §11 layers structured refusal <em>on top of</em> retrieval thresholds; together they catch what either misses alone.
       </aside>
 
-      <!-- 11. h3 Failure 4a — Conflicting sources -->
+      <!-- 11. Failure 4a — Conflicting sources -->
       <h3>Failure 4a — Conflicting sources</h3>
-      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">When a query retrieves chunks from two documents that disagree, the model sees both answers and may blend them, hedge, or pick one arbitrarily. Keeping only chunks from the single most-authoritative source makes the answer deterministic.</p>
-      <div class="code-container">
-        <div class="code-header"><span>NB 02 · cell 20 — conflicting sources surface for the same query</span></div>
-        <pre><code class="language-python"># Both program_policy (priority=1) and sample_faq (priority=5) address
-# recording retention — and they disagree on the retention window.
-CONFLICT_QUERY = "how long are session recordings kept"
-hits = retrieve(persist_dir, CONFLICT_QUERY, k=5)
-for i, doc in enumerate(hits, 1):
-    print(f"Hit {i}  |  {doc.chunk.metadata.document_id:&lt;30}"
-          f"  |  priority={doc.chunk.metadata.source_priority}"
-          f"  |  score={doc.score:.4f}")</code></pre>
-      </div>
-      <div class="code-container">
-        <div class="code-header"><span>NB 02 · cell 21 — priority-based resolution: keep only most-authoritative source</span></div>
-        <pre><code class="language-python"># Keep only chunks from the single lowest source_priority value.
-# The policy doc always wins; FAQ chunks are dropped silently.
-min_priority  = min(doc.chunk.metadata.source_priority for doc in hits)
-authoritative = [doc for doc in hits
-                 if doc.chunk.metadata.source_priority == min_priority]
-for i, doc in enumerate(authoritative, 1):
-    print(f"Hit {i}  |  {doc.chunk.metadata.document_id:&lt;30}"
-          f"  |  priority={min_priority}")
-# ✓  Only program_policy chunks remain</code></pre>
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">When the same query retrieves chunks from two documents that disagree, the model sees both answers and may blend, hedge, or flip arbitrarily. Priority-based filtering resolves the conflict before the LLM ever sees it.</p>
+
+      <div class="s8-split">
+        <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;overflow:hidden;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;padding:.6rem 1rem;border-bottom:1px solid #FFC9C9;">❌ Both sources in context — conflict</div>
+          <div style="padding:1rem;font-size:13px;line-height:1.8;">
+            <div style="color:#555;font-style:italic;margin-bottom:.5rem;">"how long are session recordings kept"</div>
+            <div>Context sent to LLM:</div>
+            <div style="background:#FFF0F0;border-radius:5px;padding:.45rem .75rem;margin:.35rem 0;">[program_policy] "Recordings available for <strong>30 days</strong>."</div>
+            <div style="background:#FFF0F0;border-radius:5px;padding:.45rem .75rem;margin:.35rem 0;">[sample_faq] "Recordings are kept for <strong>90 days</strong>."</div>
+            <div style="color:#A4262C;">↓ two contradicting answers in prompt</div>
+            <div style="background:#FFE8E8;border-left:3px solid #FC8181;border-radius:4px;padding:.6rem .85rem;margin:.5rem 0;">
+              💬 <strong>Model hedges:</strong><br/>"30 or 90 days, depending on your program type."
+            </div>
+            <div style="color:#A4262C;font-weight:600;">⚠ Wrong and confusing</div>
+          </div>
+        </div>
+        <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;overflow:hidden;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;padding:.6rem 1rem;border-bottom:1px solid #9FD89F;">✅ Priority filter — one source wins</div>
+          <div style="padding:1rem;font-size:13px;line-height:1.8;">
+            <div style="color:#555;font-style:italic;margin-bottom:.5rem;">"how long are session recordings kept"</div>
+            <div>Keep only lowest <code>source_priority</code>:</div>
+            <div style="background:#D4EDDA;border-radius:5px;padding:.45rem .75rem;margin:.35rem 0;">[program_policy] priority=1 ← kept</div>
+            <div style="background:#F0F0F0;border-radius:5px;padding:.45rem .75rem;margin:.35rem 0;color:#888;">[sample_faq] priority=5 ← dropped silently</div>
+            <div style="background:#D4EDDA;border-left:3px solid #28A745;border-radius:4px;padding:.6rem .85rem;margin:.5rem 0;">
+              💬 <strong>Model answers:</strong><br/>"Recordings available for 30 days."
+            </div>
+            <div style="color:#107C10;font-weight:600;">✓ Single authoritative source; deterministic</div>
+          </div>
+        </div>
       </div>
 
-      <!-- 12. h3 Failure 4b — Chunk size matters -->
+      <!-- 12. Failure 4b — Chunk size matters -->
       <h3>Failure 4b — Chunk size matters</h3>
-      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">The same corpus ingested at different chunk sizes produces different retrievers. NB 02 cell 23 re-ingests at <code>chunk_size=100</code> and <code>chunk_size=2000</code> to show how both extremes degrade quality compared to the default <code>500</code>.</p>
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th><code>chunk_size</code></th>
-              <th>What you get</th>
-              <th>Why it fails</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>100</strong> (too narrow)</td>
-              <td>Fragments of one sentence each</td>
-              <td>Loses surrounding context; model can't reason about clauses</td>
-            </tr>
-            <tr>
-              <td><strong>500</strong> (default)</td>
-              <td>Coherent paragraph-sized chunks</td>
-              <td>Balanced; works for this corpus</td>
-            </tr>
-            <tr>
-              <td><strong>2000</strong> (too broad)</td>
-              <td>Whole-doc-sized chunks</td>
-              <td>Retrieval becomes coarse; the same chunk wins every question</td>
-            </tr>
-          </tbody>
-        </table>
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">The same corpus ingested at different chunk sizes behaves like a completely different retriever. Both extremes degrade quality in opposite ways.</p>
+
+      <div class="s8-split">
+        <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;overflow:hidden;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;padding:.6rem 1rem;border-bottom:1px solid #FFC9C9;">❌ Extreme sizes — both degrade retrieval</div>
+          <div style="padding:1rem;font-size:13px;line-height:1.7;">
+            <div style="border-bottom:1px solid #FFC9C9;padding-bottom:.75rem;margin-bottom:.75rem;">
+              <div style="font-weight:700;color:#A4262C;margin-bottom:.35rem;">chunk_size = 100 (too narrow)</div>
+              <div style="color:#555;">Single sentence fragments. Loses surrounding context — the model sees half a rule and can't reason about multi-sentence policies.</div>
+            </div>
+            <div>
+              <div style="font-weight:700;color:#A4262C;margin-bottom:.35rem;">chunk_size = 2000 (too broad)</div>
+              <div style="color:#555;">Near-entire document sections. The same chunk wins every question — retrieval collapses from rule-level to document-level.</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;overflow:hidden;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;padding:.6rem 1rem;border-bottom:1px solid #9FD89F;">✅ chunk_size = 500 (default)</div>
+          <div style="padding:1rem;font-size:13px;line-height:1.7;">
+            <div style="font-weight:700;margin-bottom:.6rem;">Coherent paragraph-sized chunks</div>
+            <div style="display:flex;flex-direction:column;gap:.45rem;">
+              <div style="background:#D4EDDA;border-radius:5px;padding:.45rem .75rem;">✓ Enough context to reason about multi-sentence rules</div>
+              <div style="background:#D4EDDA;border-radius:5px;padding:.45rem .75rem;">✓ Similarity scores ≈ 0.97–0.99 for in-domain queries</div>
+              <div style="background:#D4EDDA;border-radius:5px;padding:.45rem .75rem;">✓ Different questions surface different chunks</div>
+            </div>
+            <div style="font-size:12px;color:var(--ink-soft);margin-top:.75rem;font-style:italic;">No universal chunk size exists — tune per corpus, question length, and retrieval k.</div>
+          </div>
+        </div>
       </div>
-      <div class="code-container">
-        <div class="code-header"><span>NB 02 · cell 23 — re-ingest at extreme chunk sizes; observe degradation</span></div>
-        <pre><code class="language-python">CHUNK_QUERY = "What happens to assignments submitted after the deadline?"
 
-# Re-ingest at extreme sizes (temp dirs; cleaned up at end of cell)
-ingest(corpus_dir=corpus_dir, persist_dir=tmp_large, chunk_size=2000, chunk_overlap=200)
-ingest(corpus_dir=corpus_dir, persist_dir=tmp_small, chunk_size=100,  chunk_overlap=10)
-
-for label, store in [("2000 (too broad)", tmp_large), ("100 (too narrow)", tmp_small)]:
-    hits = retrieve(store, CHUNK_QUERY, k=3)
-    print(f"\nchunk_size={label}")
-    for i, doc in enumerate(hits, 1):
-        chars = len(doc.chunk.text)
-        print(f"  Hit {i} | {doc.chunk.metadata.document_id:&lt;26} | score={doc.score:.4f} | {chars} chars")</code></pre>
-      </div>
-      <p style="font-size:13px;font-style:italic;color:var(--ink-soft);">Tuning is unavoidable. There is no universal chunk size — it is a function of your corpus, your typical question length, and your retrieval <code>k</code>. NB 02 cell 24 calls this out explicitly.</p>
-
-      <!-- 13. h3 Failure 5 — Stale ingestion -->
+      <!-- 13. Failure 5 — Stale ingestion -->
       <h3>Failure 5 — Stale ingestion</h3>
-      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">The vector store is a snapshot of the corpus at ingest time. Edit a policy document and the retriever returns the old text until you re-ingest. NB 02 cell 26 edits the late-submission penalty, queries the old store, then re-ingests and re-queries.</p>
-      <div class="code-container">
-        <div class="code-header"><span>NB 02 · cell 26 — stale ingestion: old penalty returned until re-ingest</span></div>
-        <pre><code class="language-python">STALE_QUERY = "What happens to late submissions?"
+      <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">The vector store is a snapshot. Edit a policy document and the retriever still returns the old text until you re-ingest — silently, with no error, at any query volume.</p>
 
-# Query the OLD vector store (v1 policy — 48-hour no-penalty window)
-hit_old = retrieve(persist_dir, STALE_QUERY, k=1)[0]
-print("=== OLD INGESTION (v1 policy) ===")
-print(hit_old.chunk.text[:300])
-
-# After editing sample_program_policy.md to add a 5-point/day penalty (2026-Q3)
-# and re-ingesting to a new persist dir:
-hit_new = retrieve(persist_stale_new, STALE_QUERY, k=1)[0]
-print("\n=== NEW INGESTION (v2 policy — 5-point/day penalty) ===")
-print(hit_new.chunk.text[:300])
-# The 2026-Q3 update is invisible until re-ingestion completes.</code></pre>
+      <div class="s8-split">
+        <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-left:4px solid var(--ms-red);border-radius:6px;overflow:hidden;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#A4262C;letter-spacing:.05em;padding:.6rem 1rem;border-bottom:1px solid #FFC9C9;">❌ Policy updated — re-ingest not triggered</div>
+          <div style="padding:1rem;font-size:13px;line-height:1.8;">
+            <div style="background:#FFEEDD;border-radius:5px;padding:.45rem .75rem;margin-bottom:.5rem;">📋 Policy updated: v1 → v2<br/><span style="color:#555;font-style:italic;">"5-point/day penalty after deadline"</span></div>
+            <div style="color:#A4262C;">↓ re-ingest NOT triggered</div>
+            <div>Vector store: still holds v1 text</div>
+            <div style="color:#A4262C;">↓ participant asks about late policy</div>
+            <div style="background:#FFE8E8;border-left:3px solid #FC8181;border-radius:4px;padding:.6rem .85rem;margin:.5rem 0;">
+              💬 <strong>Model answers (v1):</strong><br/>"48-hour grace window; no automatic penalty."
+            </div>
+            <div style="color:#A4262C;font-weight:600;">⚠ 5-point/day penalty invisible to all users</div>
+          </div>
+        </div>
+        <div style="background:#F3FBF3;border:1px solid #9FD89F;border-left:4px solid var(--ms-green);border-radius:6px;overflow:hidden;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#107C10;letter-spacing:.05em;padding:.6rem 1rem;border-bottom:1px solid #9FD89F;">✅ Policy updated — re-ingest triggered</div>
+          <div style="padding:1rem;font-size:13px;line-height:1.8;">
+            <div style="background:#E8F5E9;border-radius:5px;padding:.45rem .75rem;margin-bottom:.5rem;">📋 Policy updated: v1 → v2<br/><span style="color:#555;font-style:italic;">"5-point/day penalty after deadline"</span></div>
+            <div style="color:#107C10;">↓ re-ingest triggered (CI watches doc dir)</div>
+            <div>Vector store: updated to v2 text</div>
+            <div style="color:#107C10;">↓ participant asks about late policy</div>
+            <div style="background:#D4EDDA;border-left:3px solid #28A745;border-radius:4px;padding:.6rem .85rem;margin:.5rem 0;">
+              💬 <strong>Model answers (v2):</strong><br/>"5-point deduction per day after the deadline."
+            </div>
+            <div style="color:#107C10;font-weight:600;">✓ Answer reflects current policy</div>
+          </div>
+        </div>
       </div>
       <aside class="callout callout-critical">
-        <strong>The data analogue of stale cache.</strong> §9 row 13 in S-5 talks about stale <em>cached LLM responses</em>. This is the layer below: stale <em>retrieved documents</em>. Both need an invalidation contract — <code>prompt_version</code> for cache, re-ingestion discipline (CI-triggered on doc-dir change) for the vector store.
+        <strong>The data analogue of stale cache.</strong> §5 row 13 talks about stale <em>cached LLM responses</em>. This is the layer below: stale <em>retrieved documents</em>. Both need an invalidation contract — <code>prompt_version</code> for cache, re-ingestion discipline (CI-triggered on doc-dir change) for the vector store.
       </aside>
 
       <!-- 14. takeaway-box before expandable — verbatim from PLAN.md -->
