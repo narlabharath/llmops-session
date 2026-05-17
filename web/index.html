@@ -1577,6 +1577,7 @@
     }
     #section8 .field-info { flex: 1; font-size: 13px; line-height: 1.5; }
     #section8 .field-info small { display: block; color: var(--ink-soft); font-size: 11px; margin-top: 3px; }
+    #section8 .expandable.open .expandable-content { max-height: 3000px; }
     @media (max-width: 768px) {
       #section8 .s8-split { grid-template-columns: 1fr; }
       #section8 .result-split { grid-template-columns: 1fr; }
@@ -4890,7 +4891,12 @@ flowchart LR
       </aside>
 
       <!-- 8. Failure 1 — Parametric knowledge is not your policy -->
-      <h3>Failure 1 — Parametric knowledge is not your policy</h3>
+      <div class="expandable open" id="s8-f1">
+        <div class="expandable-header" style="background:var(--ms-blue);" data-persona="s8-f1">
+          <span>🔴 &nbsp; Failure 1 — <strong>Parametric knowledge is not your policy</strong> &nbsp; <span style="font-weight:400;font-size:12px;opacity:0.85;">training data ≠ your documents</span></span>
+          <span class="expandable-icon">▼</span>
+        </div>
+        <div class="expandable-content">
       <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">Ask the model about a program rule without any retrieved context and it draws on training data averages — fluently, confidently, and specifically wrong for your program.</p>
 
       <div class="s8-split">
@@ -4919,9 +4925,16 @@ flowchart LR
           </div>
         </div>
       </div>
+        </div>
+      </div>
 
       <!-- 9. Failure 2 — Wrong doc on top -->
-      <h3>Failure 2 — Wrong doc on top</h3>
+      <div class="expandable open" id="s8-f2">
+        <div class="expandable-header" style="background:var(--ms-blue);" data-persona="s8-f2">
+          <span>🔴 &nbsp; Failure 2 — <strong>Wrong doc on top</strong> &nbsp; <span style="font-weight:400;font-size:12px;opacity:0.85;">similarity score ≠ document authority</span></span>
+          <span class="expandable-icon">▼</span>
+        </div>
+        <div class="expandable-content">
       <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">Similarity search ranks by semantic closeness, not by document authority. For a deadline question, the <em>assignment guidelines</em> doc scores higher than the <em>program policy</em> — so it surfaces first, even though it's less authoritative.</p>
 
       <div class="s8-split">
@@ -4972,9 +4985,16 @@ flowchart LR
       <div class="mistake-box">
         <strong>The mistake:</strong> trusting cosine similarity alone. Similarity ranks by lexical closeness, not by authority. Two-stage retrieval — over-fetch then re-rank by a metadata field you control — is the cheapest fix.
       </div>
+        </div>
+      </div>
 
       <!-- 10. Failure 3 — Missing context -->
-      <h3>Failure 3 — Missing context</h3>
+      <div class="expandable open" id="s8-f3">
+        <div class="expandable-header" style="background:var(--ms-blue);" data-persona="s8-f3">
+          <span>🔴 &nbsp; Failure 3 — <strong>Missing context</strong> &nbsp; <span style="font-weight:400;font-size:12px;opacity:0.85;">out-of-corpus query → hallucination</span></span>
+          <span class="expandable-icon">▼</span>
+        </div>
+        <div class="expandable-content">
       <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">Ask about something not in the corpus and the retriever returns its nearest neighbors anyway — with no indication they're irrelevant. A score threshold detects the miss and short-circuits the LLM call before hallucination happens.</p>
 
       <div class="s8-split">
@@ -5006,9 +5026,16 @@ flowchart LR
       <aside class="callout callout-warning">
         <strong>Score thresholds are a noisy signal.</strong> They catch the obvious-miss case but fail on confidently-wrong neighbors. §11 layers structured refusal <em>on top of</em> retrieval thresholds; together they catch what either misses alone.
       </aside>
+        </div>
+      </div>
 
       <!-- 11. Failure 4a — Conflicting sources -->
-      <h3>Failure 4a — Conflicting sources</h3>
+      <div class="expandable open" id="s8-f4a">
+        <div class="expandable-header" style="background:var(--ms-blue);" data-persona="s8-f4a">
+          <span>🔴 &nbsp; Failure 4a — <strong>Conflicting sources</strong> &nbsp; <span style="font-weight:400;font-size:12px;opacity:0.85;">contradictory docs → hedged answer</span></span>
+          <span class="expandable-icon">▼</span>
+        </div>
+        <div class="expandable-content">
       <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">When the same query retrieves chunks from two documents that disagree, the model sees both answers and may blend, hedge, or flip arbitrarily. Priority-based filtering resolves the conflict before the LLM ever sees it.</p>
 
       <div class="s8-split">
@@ -5040,9 +5067,16 @@ flowchart LR
           </div>
         </div>
       </div>
+        </div>
+      </div>
 
       <!-- 12. Failure 4b — Chunk size matters -->
-      <h3>Failure 4b — Chunk size matters</h3>
+      <div class="expandable open" id="s8-f4b">
+        <div class="expandable-header" style="background:var(--ms-blue);" data-persona="s8-f4b">
+          <span>🔴 &nbsp; Failure 4b — <strong>Chunk size matters</strong> &nbsp; <span style="font-weight:400;font-size:12px;opacity:0.85;">chunk size controls retrieval precision</span></span>
+          <span class="expandable-icon">▼</span>
+        </div>
+        <div class="expandable-content">
       <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">The same corpus ingested at different chunk sizes behaves like a completely different retriever. Both extremes degrade quality in opposite ways.</p>
 
       <div class="s8-split">
@@ -5072,9 +5106,16 @@ flowchart LR
           </div>
         </div>
       </div>
+        </div>
+      </div>
 
       <!-- 13. Failure 5 — Stale ingestion -->
-      <h3>Failure 5 — Stale ingestion</h3>
+      <div class="expandable open" id="s8-f5">
+        <div class="expandable-header" style="background:var(--ms-blue);" data-persona="s8-f5">
+          <span>🔴 &nbsp; Failure 5 — <strong>Stale ingestion</strong> &nbsp; <span style="font-weight:400;font-size:12px;opacity:0.85;">vector store is a snapshot, not a live view</span></span>
+          <span class="expandable-icon">▼</span>
+        </div>
+        <div class="expandable-content">
       <p style="font-size:15px;color:var(--text-secondary);margin:0 0 1rem;">The vector store is a snapshot. Edit a policy document and the retriever still returns the old text until you re-ingest — silently, with no error, at any query volume.</p>
 
       <div class="s8-split">
@@ -5108,6 +5149,8 @@ flowchart LR
       <aside class="callout callout-critical">
         <strong>The data analogue of stale cache.</strong> §5 row 13 talks about stale <em>cached LLM responses</em>. This is the layer below: stale <em>retrieved documents</em>. Both need an invalidation contract — <code>prompt_version</code> for cache, re-ingestion discipline (CI-triggered on doc-dir change) for the vector store.
       </aside>
+        </div>
+      </div>
 
       <!-- 14. takeaway-box before expandable — verbatim from PLAN.md -->
       <div class="takeaway-box">
