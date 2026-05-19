@@ -64,6 +64,10 @@ def test_classify_question_parses_each_valid_category(category: str) -> None:
         "input": "Test question",
         "output": category,
         "latency_ms": 12.5,
+        "prompt_tokens": 10,
+        "completion_tokens": 2,
+        "cache_status": "bypass",
+        "cost_estimate_usd": 0.0,
         "prompt_version": "v1",
     }
 
@@ -96,5 +100,8 @@ def test_classify_question_with_mock_provider_runs_end_to_end(
     assert trace[-1]["input"] == "What is the late submission policy?"
     assert trace[-1]["output"] == "out_of_scope"
     assert isinstance(trace[-1]["latency_ms"], float)
+    assert trace[-1]["prompt_tokens"] > 0
+    assert trace[-1]["completion_tokens"] > 0
+    assert trace[-1]["cache_status"] == "bypass"
     assert trace[-1]["prompt_version"] == "v1"
     assert "Unexpected classification returned by LLM" in caplog.text

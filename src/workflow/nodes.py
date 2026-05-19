@@ -58,6 +58,10 @@ def classify_question(state: WorkflowState, llm: LLMClient | None = None) -> dic
         "input": question,
         "output": classification,
         "latency_ms": result.latency_ms,
+        "prompt_tokens": result.tokens_in,
+        "completion_tokens": result.tokens_out,
+        "cache_status": result.cache_status,
+        "cost_estimate_usd": result.cost_estimate_usd,
         "prompt_version": _PROMPT_VERSION,
     }
     trace = [*state.get("trace", []), trace_entry]
@@ -114,6 +118,8 @@ def generate_answer(state: WorkflowState, llm: LLMClient | None = None) -> dict[
         "output": answer,
         "retrieved_doc_ids": retrieved_doc_ids,
         "latency_ms": result.latency_ms,
+        "prompt_tokens": result.tokens_in,
+        "completion_tokens": result.tokens_out,
         "cost_estimate_usd": result.cost_estimate_usd,
         "cache_status": result.cache_status,
         "prompt_version": _PROMPT_VERSION,

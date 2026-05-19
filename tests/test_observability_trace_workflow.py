@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 
 import src.rag.retriever as retriever_module
-from src.llm import CompletionResult
+from src.llm import CompletionResult, LLMClient
 from src.observability import LocalTraceStore, get_store, trace_workflow
 from src.rag import Chunk, DocumentMetadata, build_vector_store
 from src.workflow import run_workflow
@@ -147,6 +147,24 @@ def test_trace_workflow_marks_refused_outcome(tmp_path: Path) -> None:
     assert trace.category == "out_of_scope"
     assert trace.retrieved_count == 0
     assert trace.workflow_steps == ["classify", "refuse"]
+
+
+def test_trace_workflow_with_mock_client_records_nonzero_tokens_for_refused_run(
+    tmp_path: Path,
+) -> None:
+    trace = trace_workflow(
+        run_workflow,
+        question="What is the late submission policy?",
+        persist_dir=tmp_path / "unused-store",
+        llm=LLMClient(provider="mock"),
+        store=LocalTraceStore(),
+    )
+
+    assert trace.refused is True
+    assert trace.prompt_tokens > 0
+    assert trace.completion_tokens > 0
+    assert trace.total_tokens == trace.prompt_tokens + trace.completion_tokens
+    assert trace.cache_status == "bypass"
 
 
 def test_trace_workflow_marks_escalated_outcome(

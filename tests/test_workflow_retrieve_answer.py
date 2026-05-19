@@ -164,6 +164,8 @@ def test_generate_answer_formats_all_retrieved_docs_and_parses_json_response() -
         "output": "Late submissions are allowed for two grace days. See Program Policy.",
         "retrieved_doc_ids": ["program_policy", "schedule"],
         "latency_ms": 18.0,
+        "prompt_tokens": 42,
+        "completion_tokens": 12,
         "cost_estimate_usd": 0.0,
         "cache_status": "bypass",
         "prompt_version": "v1",
